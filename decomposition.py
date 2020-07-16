@@ -183,14 +183,14 @@ def load_audioFiles_saves_segments( path_audioFiles,path_save_audio_labels, bloc
     audiofilenames_list.extend([os.path.basename(x) for x in glob.glob(path_audioFiles+'*.wav')])
     
     printb("Number of audiofiles in folder: "+str(len(audiofilenames_list)))
-   # print("audiofilenames_list ",audiofilenames_list)
+    # print("audiofilenames_list ",audiofilenames_list)
     
     fi=0
     for file_name in audiofilenames_list:
         fi=fi+1
-       # print('\n')
-       # printb('Processing '+ file_name+'          :::file number:  '+str(fi)+' --------->of '+str(len(audiofilenames_list)))
-          
+        # print('\n')
+        # printb('Processing '+ file_name+'          :::file number:  '+str(fi)+' --------->of '+str(len(audiofilenames_list)))
+
 
         offset=0
         block_id =0
@@ -202,8 +202,8 @@ def load_audioFiles_saves_segments( path_audioFiles,path_save_audio_labels, bloc
             try:
                 ## Read one block of 60 seconds 
                 block,sr = librosa.core.load(path_audioFiles+file_name, offset=offset, duration=block_size)
-               # print(block.shape , sr)
-               # print('-----------------Reading segment '+str(block_id))
+                # print(block.shape , sr)
+                # print('-----------------Reading segment '+str(block_id))
             except ValueError as e:
                 e
                 if 'Input signal length' in str(e):
@@ -215,11 +215,11 @@ def load_audioFiles_saves_segments( path_audioFiles,path_save_audio_labels, bloc
             if block.shape[0] > 0:    #when total length = multiple of blocksize, results that last block is 0-lenght, this if bypasses those cases.
                 
                 block_name=file_name[0:-4]+'__segment'+str(block_id)
-               ## print(block_name)
+                ## print(block_name)
                 
                 # READ BEE NOT_BEE ANNOTATIONS:
                 if read_beeNotBee_annotations == 'yes':
-                   # print('---------------------Will read BeeNotbee anotations and create labels for segment'+str(block_id))
+                    # print('---------------------Will read BeeNotbee anotations and create labels for segment'+str(block_id))
                     blockStart=offset
                     ##print("blockStart: ",blockStart)
                     blockfinish=offset+block_size
@@ -232,17 +232,17 @@ def load_audioFiles_saves_segments( path_audioFiles,path_save_audio_labels, bloc
                             writer =csv.DictWriter(label_file, fieldnames=['sample_name', 'segment_start','segment_finish', 'label_strength', 'label'], delimiter=',')
                             if not label_file_exists:
                                 writer.writeheader()
-                          ##  print("start read_beeNotBee_annotation_saves_labels")
+                            ##  print("start read_beeNotBee_annotation_saves_labels")
                             label_block_th=read_beeNotBee_annotations_saves_labels(file_name, block_name,  blockStart, blockfinish, annotations_path, th)                            
-                           # print("label_block_th : ", label_block_th)                           
+                            # print("label_block_th : ", label_block_th)                           
                             writer.writerow({'sample_name': block_name, 'segment_start': blockStart, 'segment_finish': blockfinish , 'label_strength': label_block_th[1],  'label': label_block_th[0]} )
-                           # print('-----------------Wrote label for th '+ str(th)+' seconds of segment'+str(block_id)  ) 
+                            # print('-----------------Wrote label for th '+ str(th)+' seconds of segment'+str(block_id)  ) 
                     
-               
+
                 # MAKE BLOCK OF THE SAME SIZE:
                 if block.shape[0] < block_size*sr:   
                     block = uniform_block_size(block, block_size*sr, 'repeat')
-                   # print('-----------------Uniformizing block length of segment'+str(block_id)  ) 
+                    # print('-----------------Uniformizing block length of segment'+str(block_id)  ) 
 
                         
             
@@ -255,12 +255,12 @@ def load_audioFiles_saves_segments( path_audioFiles,path_save_audio_labels, bloc
                     
             else :
                 #print('----------------- no more segments for this file--------------------------------------')
-               # print('\n')
+                # print('\n')
                 break
             offset += block_size
             block_id += 1
     printb('______________________________No more audioFiles___________________________________________________')
-       
+
     return 
 
 
@@ -278,7 +278,7 @@ def uniform_block_size(undersized_block, block_size_samples, method='repeat' ):
     else:
         print('methods to choose are: \'zero_padding\' ,\'mean_padding\' and \'repeat\' ' )
         new_block=0
-              
+
     return new_block
 
 
@@ -286,7 +286,7 @@ def read_HiveState_fromSampleName( filename, states):   #states: state_labels=['
     label_state='other'
     for state in states:
         if state in filename.lower():
-           # print("1 ", filename)
+            # print("1 ", filename)
             label_state = state
     #incorporate condition for Nu-hive recordings which do not follow the same annotation: 'QueenBee' or 'NO_QueenBee'
     
