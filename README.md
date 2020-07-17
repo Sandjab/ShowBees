@@ -26,7 +26,7 @@ Install the needed codecs with: `conda install -c conda-forge ffmpeg`
 
 **ipywidgets**
 
-This is needed in order to use nice widgets in the Jupyter environment, in particular progress bars, thus avoiding clustering you notebooks' output with endless log lines.
+This is needed in order to use nice widgets in the Jupyter environment, in particular progress bars, thus avoiding clustering your notebooks' output with endless log line just for progress tracking purpose.
 
 ```
 pip install ipywidgets
