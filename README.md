@@ -67,5 +67,5 @@ or
   - **Khellouf, Leila** : https://fr.linkedin.com/in/leila-khellouf-174704197
   - **Fourer, Dominique** : https://www.researchgate.net/profile/Dominique_Fourer , https://fourer.fr/
 - Reference datasets used in this repo are:
-  -   
+  - https://zenodo.org/record/1321278
 - Detailed notebook watermarking is performed uqing https://github.com/rasbt/watermark )
