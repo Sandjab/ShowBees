@@ -1,64 +1,17 @@
-import glob
+#===== Standard imports
 import os
-from info import i, printb, printr, printp, print
-import librosa
-#import pdb
+import glob
 import csv
-#import json
-#import re
+
+#===== 3rd party imports
+import librosa
 import numpy as np
-#import random
-#import librosa.display
-#import IPython.display as ipd
-#from sklearn import preprocessing
-#from collections import Counter
-#from matplotlib import pyplot as plt
-#import muda
-#import jams
-#from sklearn import svm
-#import librosa
-#import keras
-#import scipy.io as sio
-#import io
-#from scipy.io import savemat
-#from scipy.sparse import csr_matrix
-#from os.path import dirname, join as pjoin
-#_______________________________________________________________
-#from sklearn.preprocessing import LabelEncoder
-#from keras.utils import to_categorical
-#from sklearn.model_selection import train_test_split 
-#from sklearn import metrics
-#from sklearn.metrics import confusion_matrix
-#import itertools
-#from sklearn.metrics import classification_report
-#from sklearn.metrics import precision_recall_curve
-#from sklearn.metrics import plot_precision_recall_curve
-#import matplotlib.pyplot as plt
-#from keras.models import Sequential, Input, Model 
-#from keras.layers import Dense, Dropout, Flatten, Activation 
-#from keras.layers import Conv2D , MaxPooling2D
-#from keras.layers.normalization import BatchNormalization 
-#from keras.layers.advanced_activations import LeakyReLU
-#from keras.optimizers import RMSprop
-#from keras.callbacks import ModelCheckpoint, EarlyStopping
-#from sklearn.metrics import confusion_matrix
-#from keras.models import Sequential, load_model
-#from keras.initializers import normal
-#from tensorflow.keras import layers
-#from tensorflow.keras import initializers
-#from sklearn.metrics import accuracy_score 
-#import pandas as pd 
-#import scipy as sc
 
-#______________________________________________________________________________________________________________
-#----------------------------------- parameters to change-----------------------------------#
-block_size=1 # blocks of 1 second
-thresholds=[0, 0.5]  # minimum length for nobee intervals: 0 or 5 seconds (creates one label file per threshold value)
-path_audioFiles="D:\\datasets\\sounds\\BNB"+os.sep  # path to audio files
-annotations_path="D:\\datasets\\sounds\\BNB"+os.sep # path to .lab files
-path_save_audio_labels= 'D:\\datasets\\sounds\\BNB\\chunks_'+str(block_size)+'sec'+os.sep  # path where to save audio segments and labels files.
+#===== Local imports
+from info import i, printb, printr, printp, print
 
-#__________________________________________________  Decomposition in  k_ block _____________________________________
+
+
 
 def read_beeNotBee_annotations_saves_labels(audiofilename, block_name,  blockStart, blockfinish, annotations_path, threshold=0):
     
@@ -178,77 +131,66 @@ def read_beeNotBee_annotations_saves_labels(audiofilename, block_name,  blockSta
     return labels_th
 
 
-def load_audioFiles_saves_segments( path_audioFiles,path_save_audio_labels, block_size , thresholds, annotations_path, read_beeNotBee_annotations ='yes', save_audioSegments='yes'):
-    audiofilenames_list = [os.path.basename(x) for x in glob.glob(path_audioFiles+'*.mp3')]
-    audiofilenames_list.extend([os.path.basename(x) for x in glob.glob(path_audioFiles+'*.wav')])
+def build_chunks( input_path, output_path, duration , sample_rate, thresholds, use_annotations = True, save_chunks= True):
+    # Build audio filenames list (both wav and mp3)
+    filenames = [os.path.basename(x) for x in glob.glob(input_path+'*.mp3')]
+    filenames.extend([os.path.basename(x) for x in glob.glob(input_path+'*.wav')])
     
-    printb("Number of audiofiles in folder: "+str(len(audiofilenames_list)))
-    # print("audiofilenames_list ",audiofilenames_list)
+    # Create output directory, if needed
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+
+    # Announce planned work
+    printb("Processing "+str(len(filenames)) + " audio files.")
+    #print(filenames)
     
-    fi=0
-    for file_name in audiofilenames_list:
-        fi=fi+1
-        # print('\n')
-        # printb('Processing '+ file_name+'          :::file number:  '+str(fi)+' --------->of '+str(len(audiofilenames_list)))
-
-
+    for filename in filenames:
         offset=0
-        block_id =0
-        
+        chunk_id =0
         
         while 1:
-                    
-            # READ ONE BLOCK OF THE AUDIO FILE
             try:
-                ## Read one block of 60 seconds 
-                block,sr = librosa.core.load(path_audioFiles+file_name, offset=offset, duration=block_size)
-                # print(block.shape , sr)
-                # print('-----------------Reading segment '+str(block_id))
+                ## Read one chunk of duration seconds at a time
+                chunk, sr = librosa.core.load(input_path + filename, sr=sample_rate, offset=offset, duration=duration)
             except ValueError as e:
                 e
                 if 'Input signal length' in str(e):
-                    block=np.arange(0)
+                    chunk=np.arange(0)
             except FileNotFoundError as e1:
                 print(e1, ' but continuing anyway')
                 
-            ##print("test")
-            if block.shape[0] > 0:    #when total length = multiple of blocksize, results that last block is 0-lenght, this if bypasses those cases.
+            if chunk.shape[0] > 0:    #when total length = multiple of blocksize, results that last block is 0-lenght, this if bypasses those cases.
                 
-                block_name=file_name[0:-4]+'__segment'+str(block_id)
-                ## print(block_name)
+                chunk_name = filename[0:-4] + '.' + str(chunk_id).zfill(4);
                 
-                # READ BEE NOT_BEE ANNOTATIONS:
-                if read_beeNotBee_annotations == 'yes':
-                    # print('---------------------Will read BeeNotbee anotations and create labels for segment'+str(block_id))
-                    blockStart=offset
-                    ##print("blockStart: ",blockStart)
-                    blockfinish=offset+block_size
-                    ##print("blockfinish: ",blockfinish)
+                # Process annotations, if requested:
+                if use_annotations:
+                    start_t = offset
+                    end_t   = offset + duration
                     
                     for th in thresholds:
-                        #print("th::::::::::", th)
-                        label_file_exists = os.path.isfile(path_save_audio_labels+'labels_BeeNotBee_th'+str(th)+'.csv')
-                        with open(path_save_audio_labels+'labels_BeeNotBee_th'+str(th)+'.csv','a', newline='') as label_file:
-                            writer =csv.DictWriter(label_file, fieldnames=['sample_name', 'segment_start','segment_finish', 'label_strength', 'label'], delimiter=',')
+                        label_file_exists = os.path.isfile(output_path+'labels_th'+str(th)+'.csv')
+                        with open(output_path + 'labels_th' + str(th)+'.csv','a', newline='') as label_file:
+                            writer =csv.DictWriter(label_file, fieldnames=['name', 'start_t','end_t', 'strength', 'label'], delimiter=',')
                             if not label_file_exists:
                                 writer.writeheader()
                             ##  print("start read_beeNotBee_annotation_saves_labels")
-                            label_block_th=read_beeNotBee_annotations_saves_labels(file_name, block_name,  blockStart, blockfinish, annotations_path, th)                            
+                            label_block_th=read_beeNotBee_annotations_saves_labels(filename, chunk_name,  start_t, end_t, input_path, th)                            
                             # print("label_block_th : ", label_block_th)                           
-                            writer.writerow({'sample_name': block_name, 'segment_start': blockStart, 'segment_finish': blockfinish , 'label_strength': label_block_th[1],  'label': label_block_th[0]} )
+                            writer.writerow({'name': chunk_name, 'start_t': start_t, 'end_t': end_t , 'strength': label_block_th[1],  'label': label_block_th[0]} )
                             # print('-----------------Wrote label for th '+ str(th)+' seconds of segment'+str(block_id)  ) 
                     
 
                 # MAKE BLOCK OF THE SAME SIZE:
-                if block.shape[0] < block_size*sr:   
-                    block = uniform_block_size(block, block_size*sr, 'repeat')
-                    # print('-----------------Uniformizing block length of segment'+str(block_id)  ) 
+                if chunk.shape[0] < duration*sr:   
+                    chunk = uniform_block_size(chunk, duration*sr, 'repeat')
+                    print('-----------------Uniformizing block length of segment'+str(chunk_id)  ) 
 
                         
             
-                # Save audio segment:
-                if save_audioSegments=='yes' and (not os.path.exists(path_save_audio_labels+block_name+'.wav')): #saves only if option is chosen and if block file doesn't already exist.
-                    librosa.output.write_wav(path_save_audio_labels+block_name+'.wav', block, sr)
+                # Save chunk, if requested:
+                if save_chunks and (not os.path.exists(output_path+chunk_name+'.wav')): #saves only if option is chosen and if block file doesn't already exist.
+                    librosa.output.write_wav(output_path + chunk_name+'.wav', chunk, sr)
                     #print( '-----------------Saved wav file for segment '+str(block_id))
                 
                     
@@ -257,8 +199,8 @@ def load_audioFiles_saves_segments( path_audioFiles,path_save_audio_labels, bloc
                 #print('----------------- no more segments for this file--------------------------------------')
                 # print('\n')
                 break
-            offset += block_size
-            block_id += 1
+            offset += duration
+            chunk_id += 1
     printb('______________________________No more audioFiles___________________________________________________')
 
     return 

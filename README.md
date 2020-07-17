@@ -26,7 +26,7 @@ Install the needed codecs with: `conda install -c conda-forge ffmpeg`
 
 **ipywidgets**
 
-This is needed in order to use nice widgets in the Jupyter environment, in particular progress bars, thus avoiding clustering your notebooks' output with endless log line just for progress tracking purpose.
+This is needed in order to use nice widgets in the Jupyter environment, in particular progress bars, thus avoiding clustering your notebooks' output with endless log lines just for progress tracking purpose.
 
 ```
 pip install ipywidgets
@@ -68,4 +68,6 @@ or
   - **Fourer, Dominique** : https://www.researchgate.net/profile/Dominique_Fourer , https://fourer.fr/
 - Reference datasets used in this repo are:
   - https://zenodo.org/record/1321278
-- Detailed notebook watermarking is performed uqing https://github.com/rasbt/watermark )
+- Documentation was generated with Sphinx ( https://www.sphinx-doc.org/ )
+- Detailed notebook watermarking was performed using https://github.com/rasbt/watermark )
+- No animals were harmed in the making of this repository
