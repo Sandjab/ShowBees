@@ -1,6 +1,6 @@
 # ShowBees - Beehive sound analysis
 
-This repository present several experiments related to the interpretation of sounds produced by bees, as a mean of detecting beehives' health status and stress level.
+This repository presents several experiments related to the interpretation of sounds produced by bees, as a mean of detecting beehives' health status and stress level.
 
 ---
 ## Pre-requisites
