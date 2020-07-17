@@ -1,5 +1,6 @@
 # ShowBees - Beehive sound analysis
 
+This repository present several experiments related to the interpretation of sounds produced by bees, as a mean of detecting beehives' health status and stress level.
 
 ---
 ## Pre-requisites
@@ -40,13 +41,31 @@ or
 
 - the **experiments** directory contains:
   - one subdirectory EXPxyz for each experiment
-  - a README.md file with the list of experiments (experiment code EXPxyz, name, and short description)
+  - a README.md file with the list of experiments (experiment code EXPxyz, name, and short description), as well as an introduction to the experiments common process, if needed.
 
 - each **experiments/EXPxyz** directory contains:
   - a README.md file with a detailed description the experiment
   - the notebook(s) used to conduct the experiment,
-  - optionnaly, output files produced during the notebook(s) execution
+  - optionnaly, output files produced during the notebook(s) execution. If needed, adhoc subdirectories may be used for organizational purposes.
+  - optionnaly, python files specific to this experiment (see Rules below). If needed, adhoc subdirectories may be used for organizational purposes.
 
 - the **codelib** directory contains:
-  - all python modules needed by the aforementioned notebooks,
+  - all python modules shared by the aforementioned notebooks,
   - a README.md with a short description of each module's purpose
+  - subdirectories may be used to group modules per domain (e.g. preprocessing, classifiers, visualization, etc...)
+
+--- 
+## Repository Rules
+- A python code file must never be duplicated across experiments. Tne codelib directory is here to allow common code sharing between experiments.
+- Replication of IPython code between notebooks is obviously allowed, but must be limited to parameter setting and function calls (no complex code in notebooks)
+- Python code specific to a given experiment should be avoided in .py files (a repository normally contains only related experiments, which are in fact various scenarii around a same domain, generally using common code).
+ 
+---
+## Credits
+- Most of this repo code is a reuse of the (sometimes refactored) code from:
+  - **Nolasco, Ines** : https://www.researchgate.net/profile/Ines_Nolasco
+  - **Khellouf, Leila** : https://fr.linkedin.com/in/leila-khellouf-174704197
+  - **Fourer, Dominique** : https://www.researchgate.net/profile/Dominique_Fourer , https://fourer.fr/
+- Reference datasets used in this repo are:
+  -   
+- Detailed notebook watermarking is performed uqing https://github.com/rasbt/watermark )

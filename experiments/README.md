@@ -1,6 +1,6 @@
 # Experiments' datasets and processes
 
-## General pre-processing aof audi files
+## General pre-processing of audio files
 In order to produce samples usable for classification, hive recording audio files are segmented into chunks:
 - of a specific duration (DUR), 
 - resampled at a specific sample rate (SR), 
@@ -64,7 +64,7 @@ This subset consists in the following 48 audio files, both mp3 and wav, of vario
 | `Hive3_20_07_2017_QueenBee_H3_audio___06_20_00` |
 
 
-The repo experiment with this dataset uses **DUR = 1s**, **SR = 22 050Hz** and **THR = 0.5s**.
+The repo experiment with this dataset uses **DUR = 1s**, **SR = 8000Hz** and **THR = 0.1s**.
 
 Using these parameters, the segmentation process produces 24816 one second chunks, of which only 17295 satisfy the threshold and as such will be used for the Queen/NoQueen classification.
 
@@ -79,7 +79,6 @@ It consists in the following 4 wav audio files
 |-|
 | `Hive1_12_06_2018_QueenBee_H1_audio___15_00_00` |
 | `Hive1_31_05_2018_NO_QueenBee_H1_audio___15_00_00` |
-
 | `Hive3_12_07_2017_NO_QueenBee_H3_audio___15_00_00` |
 | `Hive3_12_07_2017_NO_QueenBee_H3_audio___15_10_00` |
 | `Hive3_12_07_2017_NO_QueenBee_H3_audio___15_20_00` |
