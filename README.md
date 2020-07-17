@@ -4,7 +4,7 @@ This repository present several experiments related to the interpretation of sou
 
 ---
 ## Pre-requisites
-In order to execute properly this github code, you'll need **Jupyter notebook** or **Jupiter lab**, as well as the following additional packages/libraries:
+In order to execute properly this github code, you'll need **Jupyter notebook** or **Jupiter lab** (https://jupyter.org/), as well as the following additional packages/libraries:
 
 **numba** version 0.48 :
 
