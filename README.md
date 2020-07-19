@@ -26,12 +26,12 @@ Install the needed codecs with: `conda install -c conda-forge ffmpeg`
 
 To allow replicability checks, output directories of various processes within this repository are "signed" using a md5 hash. This reference hash is "frozen" in each experiment documentation.
 
-As this hash is displayed at the end of each major process completion, one can check at a glance if the obtained result shares the same hash as the reference hash of the experiment he or she is trying to replicate.
+As this hash is displayed at the end of each major process completion, one can check at a glance if the obtained result shares the same hash as the reference experiment he or she is trying to replicate.
 
 Install it using: `python -m pip install checksumdir --user`
 
 <ins>From python</ins>
-```python
+```Jupyter Notebook
 """directory hash computation"""
 from checksumdir import dirhash
 
