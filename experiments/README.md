@@ -2,7 +2,7 @@
 
 | Id | Mnemo | Dataset| Description |
 |---|---|---|---|
-|EXP001|MFCC+DNN| BNB | Blaaaaaaah Bmahhhhh Béééééé|
+|**EXP001**|MFCC+DNN| BNB | Blaaaaaaah Bmahhhhh Béééééé|
 
 
 
@@ -22,7 +22,7 @@ The **BNB** dataset is a subset of the reference "to bee or not to bee' annotate
 This subset consists in the following 48 audio files, both mp3 and wav, of various durations, for a total of xx hours of recording on 6 different hives, over different days and time of the day
 
 | File Name  (without extension)|
-|-|
+| --- |
 | `CF001 - Missing Queen - Day -` |
 | `CF003 - Active -   Day - (214)` |
 | `CF003 - Active - Day - (215)` |
