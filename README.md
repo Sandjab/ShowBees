@@ -34,17 +34,16 @@ Install it using: `python -m pip install checksumdir --user`
 
 <ins>You may now use it from python</ins>
 ```python
-"""directory hash computation"""
 from checksumdir import dirhash
 
-directory  = 'D:/datasets/sounds/SANDBOX'
+directory  = 'D://path/to/directory'
 md5hash    = dirhash(directory, 'md5')
 
 print(directory, md5hash)
 ```
 
 <ins>or from the command line</ins>
-```
+```shell
 checksumdir /path/to/directory
 ```
 
