@@ -103,7 +103,7 @@ interpreter: 64bit
 - Duplication of IPython code between notebooks is obviously allowed, but must be limited to:
   - parameters setting, orchestration of macro functions calls and results visualisation (notebooks' code should be sequential without any complex logic)
   - exploratory snippets not meant for experiment replication (non trustable)
-- Python code '.py) files specific to a given experiment should be avoided in experiment directory (as a repository normally contains only related experiments, which are in fact various scenarii around a same domain, they should generally use common code).
+- Python code (.py) files specific to a given experiment should be avoided in experiment directory (as a repository normally contains only related experiments, which are in fact various scenarii around a same domain, they should generally use common code).
 - Re-implementations of notebooks as selfcontained regular python files for execution out of interactive python environment is notable exception of the above rule. 
  
 ---
