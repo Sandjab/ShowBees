@@ -30,8 +30,10 @@ As this hash is displayed at the end of each major process completion, one can c
 
 Install it using: `python -m pip install checksumdir --user`
 
-<ins>From python</ins>
-```Jupyter Notebook
+
+
+<ins>You may now use it from python</ins>
+```python
 """directory hash computation"""
 from checksumdir import dirhash
 
@@ -41,7 +43,7 @@ md5hash    = dirhash(directory, 'md5')
 print(directory, md5hash)
 ```
 
-<ins>From the command line</ins>
+<ins>or from the command line</ins>
 ```
 checksumdir /path/to/directory
 ```
