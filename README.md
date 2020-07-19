@@ -118,7 +118,7 @@ interpreter: 64bit
   
 - Documentation was generated with **Sphinx** ( https://www.sphinx-doc.org/ )
 
-- Detailed notebook hardware, os, language and libraies signature was performed using **watermark** ( https://github.com/rasbt/watermark )
+- Detailed notebook hardware, os, language and libraries signature was performed using **watermark** ( https://github.com/rasbt/watermark )
 
 - Initial exploratory analysis was performed using:
   - **London University Sonic Visualiser** ( https://www.sonicvisualiser.org/ ) and **Vamp Plugins** ( https://www.vamp-plugins.org/download.html )
