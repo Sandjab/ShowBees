@@ -98,8 +98,8 @@ interpreter: 64bit
   - Adhoc subdirectories may be used to organize modules per domain (e.g. preprocessing, classifiers, visualization, etc...)
   
 - the **datasets** directory contains:
-  - a **reference** subdirectory where you have to copy reference datasets. At initialisation time, it contains only a README files describing of to install thes
-  - an **experiments**' subdirectory where experiment datasets will be built from the reference datasets
+  - a **reference** subdirectory where you have to copy reference datasets. Empty at initialisation time.
+  - an **experiments**' subdirectory where experiment datasets will be built from the reference datasets. Empty at initialisation time.
   
 *Note: Within the dataset directory, all files but *.md files are .gitignored*
   
@@ -121,7 +121,7 @@ This repository has been built having in mind theses guidelines:
 To replicate an experiment, you should:
 
 - **Build the input dataset from a reference dataset** : As datasets may be quite large, they are not saved in this repository, and must be build using the following steps: 
-  - Get the refercence dataset: Reference datasets must be retrieved from the internet. Links to these datasets are provided at the bottom of this file, as well as in the experiments README. Download them and save them in a subdirectory of the datasets/reference directory.  
+  - Get the reference dataset: Reference datasets must be retrieved from the internet. Links to these datasets are provided at the bottom of this file, as well as in the **datasets** README. Download them and save them in a subdirectory of the datasets/reference directory.  
   - Build the experiment dataset: Experiments datasets are subsets or mixtures of the reference datasets. Their content is detailled in the experiment README. You should build the required experiment dataset according to its description by cherry-picking files from a reference dataset, and save them in a specific directory.
   - Check the experiment dataset: Compute a MD5 hash over the directory you just created. This hash should be identical to the one provided in the experiment dataset detailed description. If not, check that the files list is correct. 
   - From this point, you have reasonably insured that you have the same initial conditions than the original experiment (and so, you can expect to obtain the same results;-) )

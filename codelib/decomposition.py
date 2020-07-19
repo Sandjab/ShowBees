@@ -115,7 +115,7 @@ def read_beeNotBee_annotations_saves_labels(audiofilename, block_name,  blockSta
             
                 
     except FileNotFoundError as e:
-        print(e, '--Anotation file does not exist! label as unknown')
+        print(e, '--Annotation file does not exist! label as unknown')
         #print(annotation_filename=audiofilename[0:-4]+'.lab')
             
         label2assign = 'unknown'
@@ -150,7 +150,7 @@ def build_chunks( input_path, output_path, duration , sample_rate, thresholds, u
         
         while 1:
             try:
-                ## Read one chunk of duration seconds at a time
+                ## Read one chunk of "duration" seconds at a time
                 chunk, sr = librosa.core.load(input_path + filename, sr=sample_rate, offset=offset, duration=duration)
             except ValueError as e:
                 e
@@ -161,7 +161,7 @@ def build_chunks( input_path, output_path, duration , sample_rate, thresholds, u
                 
             if chunk.shape[0] > 0:    #when total length = multiple of blocksize, results that last block is 0-lenght, this if bypasses those cases.
                 
-                chunk_name = filename[0:-4] + '.' + str(chunk_id).zfill(4);
+                chunk_name = filename[0:-4] + '_chunk' + str(chunk_id).zfill(4);
                 
                 # Process annotations, if requested:
                 if use_annotations:
