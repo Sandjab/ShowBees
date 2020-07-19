@@ -1,7 +1,7 @@
 # Experiments
 
 | Id | Mnemo | Dataset| Description |
-|---|---|---|---|
+| :---: | :---:  | :---: | :--- |
 |**EXP001**|MFCC+DNN| BNB | Blaaaaaaah Bmahhhhh Béééééé|
 
 
