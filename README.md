@@ -107,7 +107,7 @@ interpreter: 64bit
 - Re-implementations of notebooks as selfcontained regular python files for execution out of interactive python environment is notable exception of the above rule. 
  
 ---
-## Credits
+## Credits & Notes
 - Most of this repository code is a reuse of the (either untouched, slightly modified or heavily refactored) code from:
   - **Nolasco, Ines** : https://www.researchgate.net/profile/Ines_Nolasco
   - **Khellouf, Leila** : https://fr.linkedin.com/in/leila-khellouf-174704197
