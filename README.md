@@ -97,33 +97,35 @@ interpreter: 64bit
   - a README.md with a short description of each module's purpose
   - Adhoc subdirectories may be used to organize modules per domain (e.g. preprocessing, classifiers, visualization, etc...)
   
+- the **datasets** directory contains:
+  - a **reference** subdirectory where you have to copy reference datasets. At initialisation time, it contains only a README files describing of to install thes
+  - an **experiments**' subdirectory where experiment datasets will be built from the reference datasets
+  
+*Note: Within the dataset directory, all files but *.md files are .gitignored*
+  
+--- 
+## Repository Guidelines
+
+This repository has been built having in mind theses guidelines:
+
+- A python code (.py) file must never be duplicated across experiments. The codelib directory specifically exists for the purpose of allowing common code sharing between experiments.
+- Duplication of IPython code between notebooks is obviously allowed, but must be limited to:
+  - parameters setting, orchestration of macro functions calls and results visualisation (notebooks' code should be sequential without any complex logic)
+  - exploratory snippets not meant for experiment replication (non trustable)
+- Python code (.py) files specific to a given experiment should be avoided in this experiment directory (as the repository normally contains only related experiments, which are in fact various scenarii around a same domain, they should generally use common code).
+- Re-implementations of notebooks as selfcontained regular python files for execution out of interactive python environment is a notable exception to the above rule.   
   
 --- 
 ## How to replicate an experiment
 
 To replicate an experiment, you should:
 
-1. **Build the input dataset from a reference dataset** : 
-
-  1. As reference datasets may be quite large, they are not part of this repository, and must be retrieved from the internet.
-  2. As reference datasets may be quite large, they are not part of this repository, and must be retrieved from the internet.
-  
-2. frkfk
-3. RRDDDFf
-4. Profit. 
-
---- 
-## Repository Guidelines
-
-When cloning, forking or cpying this directory, you should follow the below guidelines:
-
-- A python code (.py) file must never be duplicated across experiments. The codelib directory specifically exists for the purpose of allowing common code sharing between experiments.
-- Duplication of IPython code between notebooks is obviously allowed, but must be limited to:
-  - parameters setting, orchestration of macro functions calls and results visualisation (notebooks' code should be sequential without any complex logic)
-  - exploratory snippets not meant for experiment replication (non trustable)
-- Python code (.py) files specific to a given experiment should be avoided in experiment directory (as a repository normally contains only related experiments, which are in fact various scenarii around a same domain, they should generally use common code).
-- Re-implementations of notebooks as selfcontained regular python files for execution out of interactive python environment is notable exception of the above rule. 
- 
+- **Build the input dataset from a reference dataset** : As datasets may be quite large, they are not saved in this repository, and must be build using the following steps: 
+  - Get the refercence dataset: Reference datasets must be retrieved from the internet. Links to these datasets are provided at the bottom of this file, as well as in the experiments README. Download them and save them in a subdirectory of the datasets/reference directory.  
+  - Build the experiment dataset: Experiments datasets are subsets or mixtures of the reference datasets. Their content is detailled in the experiment README. You should build the required experiment dataset according to its description by cherry-picking files from a reference dataset, and save them in a specific directory.
+  - Check the experiment dataset: Compute a MD5 hash over the directory you just created. This hash should be identical to the one provided in the experiment dataset detailed description. If not, check that the files list is correct. 
+  - From this point, you have reasonably insured that you have the same initial conditions than the original experiment (and so, you can expect to obtain the same results;-) )
+   
 ---
 ## Credits & Notes
 - Most of this repository code is a reuse of the (either untouched, slightly modified or heavily refactored) code from:
