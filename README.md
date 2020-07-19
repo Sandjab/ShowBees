@@ -26,13 +26,11 @@ Install the needed codecs with: `conda install -c conda-forge ffmpeg`
 
 To allow replicability checks, output directories of various processes within this repository are "signed" using a md5 hash. This reference hash is "frozen" in each experiment documentation.
 
-As this hash is displayed at the end of each major process completion, one can check at a glance if the obtained result shares the same hash as the reference experiment he or she is trying to replicate.
+As this hash is displayed at the end of each major process completion, one can infer at a glance if the obtained result shares the same hash as the reference experiment he or she is trying to replicate.
 
 Install it using: `python -m pip install checksumdir --user`
 
-
-
-<ins>You may now use it from python</ins>
+You may now use it as follow:
 ```python
 from checksumdir import dirhash
 
@@ -42,10 +40,6 @@ md5hash    = dirhash(directory, 'md5')
 print(directory, md5hash)
 ```
 
-<ins>or from the command line</ins>
-```shell
-checksumdir /path/to/directory
-```
 
 ### ipywidgets
 
@@ -59,6 +53,31 @@ or
 
 `conda install -c conda-forge ipywidgets`
 
+## System Information
+
+Experimental results documented in this repository were produced using the configuration below:
+
+```
+CPython 3.7.7
+IPython 7.16.1
+
+conda 4.8.3
+numba 0.48.0
+tensorflow 1.14.0
+keras 2.3.1
+scipy 1.5.0
+sklearn 0.23.1
+soundfile 0.10.3.post1
+librosa 0.7.2
+
+compiler   : MSC v.1916 64 bit (AMD64)
+system     : Windows
+release    : 10
+machine    : AMD64
+processor  : Intel64 Family 6 Model 142 Stepping 10, GenuineIntel
+CPU cores  : 8
+interpreter: 64bit
+```
 
 ---
 ## Repository structure
