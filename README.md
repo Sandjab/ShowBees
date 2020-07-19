@@ -96,9 +96,25 @@ interpreter: 64bit
   - all python modules shared by the aforementioned notebooks,
   - a README.md with a short description of each module's purpose
   - Adhoc subdirectories may be used to organize modules per domain (e.g. preprocessing, classifiers, visualization, etc...)
+  
+  
+--- 
+## How to replicate an experiment
+
+To replicate an experiment, you should:
+
+1. **Build the input dataset from a reference dataset** : 
+  1. As reference datasets may be quite large, they are not part of this repository, and must be retrieved from the internet.
+  1. As reference datasets may be quite large, they are not part of this repository, and must be retrieved from the internet.
+1. frkfk
+1. RRDDDFf
+1. Profit. 
 
 --- 
-## Repository Rules
+## Repository Guidelines
+
+When cloning, forking or cpying this directory, you should follow the below guidelines:
+
 - A python code (.py) file must never be duplicated across experiments. The codelib directory specifically exists for the purpose of allowing common code sharing between experiments.
 - Duplication of IPython code between notebooks is obviously allowed, but must be limited to:
   - parameters setting, orchestration of macro functions calls and results visualisation (notebooks' code should be sequential without any complex logic)
