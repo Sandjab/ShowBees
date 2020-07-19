@@ -1,4 +1,10 @@
-# Experiments' datasets and processes
+# Experiments
+
+| Id | Mnemo | Dataset| Description |
+|---|---|---|---|
+|EXP001|MFCC+DNN| BNB | Blaaaaaaah Bmahhhhh Béééééé|
+
+
 
 ## General pre-processing of audio files
 In order to produce samples usable for classification, hive recording audio files are segmented into chunks:
@@ -7,10 +13,13 @@ In order to produce samples usable for classification, hive recording audio file
 - and a thresold (THR) is applied in order to retain only files with less than HTS seconds of external noise.
 
 
+
+
+# Datasets
 ## BNB data sets
 The **BNB** dataset is a subset of the reference "to bee or not to bee' annotated dataset used in [1] (corresponding sound files and documentation is available for download at https://zenodo.org/record/1321278 )
 
-This subset consists in the following 48 audio files, both mp3 and wav, of various durations, for a total of xx hours of recording on 6 different hives, over different days and time of the day. 
+This subset consists in the following 48 audio files, both mp3 and wav, of various durations, for a total of xx hours of recording on 6 different hives, over different days and time of the day
 
 | File Name  (without extension)|
 |-|
