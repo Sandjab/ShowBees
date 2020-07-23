@@ -1,11 +1,11 @@
-
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
-# Ignore every file and directory in the datasets directory, except README.md
-datasets/*/**
-#!datasets/README.md
+# Ignore any subdirectory and its content in the datasets directory
+/datasets/*/
 
+# Ignore any tmp directory and its content, anywhere
+**/tmp/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
