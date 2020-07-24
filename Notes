@@ -1,0 +1,36 @@
+CONSTITUTION DES CHUNKS
+
+La labellisation bee/nobee se base sur un aggrégat de la durée des sons extérieurs ne prenant en compte que les perturbations dont la durée unitaire est supérieure à un seuil passé en paramètre.
+
+Si l'agrégat est non nul, le segment est considéré "nobee".
+
+Sur des segments courts, cela a peu d'importance, mais sur des segments longs, il vaudrait sans doute mieux décider en se basant sur un % de perturbation total (durée cumulée de tous les nobee d'un segment quelle que soit leur durée / durée du segment)
+
+---------------------------------------------------------------------------------------------------------------------
+
+La librairie utilisée (Librosa) pour le chargement des fichiers sons est peu performante.
+
+Sur mon laptop (Core i7, mais seulement 8Go RAM), le load prend:
+- Pour un mp3 de 10mn: de l'ordre de 3s sans resampling, et 20s avec resampling
+- Pour un wav de 10mn: de l'ordre de la demi seconde sans resampling, et 15s avec resampling
+
+Sur le dataset de l'article, ceci conduit à un temps de chargement rédhibitoire de plus de 4h30 (dont 4h rien que pour le gros mp3 du dataset) pour traiter 48 fichiers et constituer les 24816 chunks de 1s
+
+On pourrait envisager de basculer sur une librairie plus performante (pydub, pySox) mais l'erreur est en réalité conceptuelle: en effet, on invoque en boucle librosa.core.load sur un même fichier pour chaque chunk de 1s, avec un temps d'exécution unitaire en O(n) (puisqu'il faut décoder les k premières secondes du fichier pour découper le chunk k+1. Résultat des courses, un temps d'éxecution en O(n^2) pour le slicing d'un seul fichier source...
+
+
+---------------------------------------------------------------------------------------------------------------------
+
+
+CONSTITUTION DES CHUNKS
+ - Refactoring du code et renommages des fichiers, fonctions et variables
+ - Amélioration massive des performances (x15) grâce au chargement et resampling du fichier en une seule fois, puis constitution des chunks à partir de l'array 1D obtenu.
+ - Modification de fonctionnalités :
+    - Ajout d'un paramètre overlap, permettant de générer des chunks en chevauchement
+    - Les chunks sont sauvés dans des sous-repertoires dont la nomenclature est normalisée
+    - le numéro de chunck est paddé à gauche avec des zéros (pourl'équivalence des tris alphabétiques et chronologiques)
+    - Si un chunk n'atteint pas la durée spécifiée (cas potentiel du dernier chunk d'un fichier source), il est n'est tout simplement pas généré. La complétion de ce type de chunk par mirroring a en effet peu d'intérêt pour des durées courtes (où l'on dispose de suffisament de fichiers) , et elle introduit un bruit non maitrisé dans le jeu de test. Si besoin, cela pourra toujour être ajouté ultérieurement.
+    - suppression de la gestion partielle des exceptions: l'environnement est suffisament maitrisé pour qu'on puisse se permettre de juste interrompre le traitement
+    - a contrario, ajout systématique d'asserts de sanity checks
+     
+ 

@@ -22,9 +22,22 @@ Install it with `python -m pip install soundFile --user`
 
 Install the needed codecs with: `conda install -c conda-forge ffmpeg`
 
+
+### Pydub
+`conda install -c conda-forge pydub`
+
+### PySox
+
+
+### pyprojroot
+
+Allows finding root directory in Python projects, just like the **R** `here` and `rprojroot` packages.
+
+`conda install -c conda-forge pyprojroot`
+
 ### checksumdir
 
-To allow replicability checks, output directories of various processes within this repository are "signed" using a md5 hash. This reference hash is "frozen" in each experiment documentation.
+To allow replicability checks, output directories of various processes within this repository are "signed" using a md5 hash. This reference hash is "frozen" in each experiment manifest.
 
 As this hash is displayed at the end of each major process completion, one can infer at a glance if the obtained result shares the same hash as the reference experiment he or she is trying to replicate.
 

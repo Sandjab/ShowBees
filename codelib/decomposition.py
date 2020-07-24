@@ -48,20 +48,22 @@ def read_beeNotBee_annotations_saves_labels(audiofilename, block_name,  blockSta
             
             # all files end with a dot followed by an empty line.
 
-            print(annotations_path + os.sep + annotation_filename)
+            #print(annotations_path + os.sep + annotation_filename)
             lines = f.read().split('\n')
         
             labels_th=['bee', 0.0]
             label2assign='bee'
             label_strength=0
-            intersected_s=0
-                            
+            intersected_s = 0
+            intersected_s2 = 0
+            count = 0
             for line in lines:
                 if (line == annotation_filename[0:-4]) or (line == '.') or (line ==''):
                     #ignores title, '.', or empty line on the file.
                     continue
                 
-                #print(line)
+                count = count + 1
+                #print(count,": ",line)
                 parsed_line= line.split('\t')    
                 
                 assert (len(parsed_line)==3), ('expected 3 fields in each line, got: '+str(len(parsed_line))) 
@@ -74,59 +76,49 @@ def read_beeNotBee_annotations_saves_labels(audiofilename, block_name,  blockSta
                     break
                     
                 if annotation_label== 'nobee':
-                    
-                        
                     if tp1-tp0 >= threshold:  # only progress if nobee interval is longer than defined threshold.
-                    
                         if tp0 > blockStart and tp0 <= blockfinish and tp1 >= blockfinish:
-                            
                             intersected_s=intersected_s + (blockfinish-tp0)    
                             # |____________########|########
                             # bs          tp0      bf      tp1 
-                        
                         elif tp1 >= blockStart and tp1 < blockfinish and tp0 <= blockStart:
-                            
                             intersected_s=intersected_s+ (tp1-blockStart)
                             # #####|########_____|
                             # tp0  bs     tp1    bf
-                            
-                            
                         elif tp1 >= blockStart and tp1 <= blockfinish and tp0 >= blockStart and tp0 <= blockfinish:
-                            
                             intersected_s=intersected_s+ (tp1-tp0)
                             # |_____########_____|
                             # bs   tp0    tp1    bf
-                        
                         elif tp0 <= blockStart and tp1 >= blockfinish:
-                            
                             intersected_s=intersected_s + (blockfinish-blockStart)
                             #  ####|############|####
                             # tp0  bs           bf  tp1
-                            
+
+
+
                     if intersected_s > 0:
-                        label2assign='nobee'
+                        intersected_s2 = intersected_s2 + min(tp1, blockfinish) - max(blockStart, tp0)
+                        if (intersected_s != intersected_s2):
+                            print("What the fuck?")
+                        label2assign = 'nobee'
+                        
                     label_strength= intersected_s/block_length # proportion of nobee length in the block
+                    labels_th= [label2assign, round(label_strength,3)]  # if label_strength ==0 --> bee segment 
                     
                     
-                    labels_th= [label2assign, round(label_strength,3)]  # if label_strehgth ==0 --> bee segment 
-                    
-                    
-            assert (blockfinish <=tp1 ), ('the end of the request block falls outside the file: block ending: '+ str(blockfinish)+' end of file at: '+ str(tp1))
+            #assert (blockfinish <=tp1 ), ('the end of the request block falls outside the file: block ending: '+ str(blockfinish)+' end of file at: '+ str(tp1))
             
                 
     except FileNotFoundError as e:
         print(e, '--Annotation file does not exist! label as unknown')
         #print(annotation_filename=audiofilename[0:-4]+'.lab')
-            
         label2assign = 'unknown'
         label_strength=-1
-        
         labels_th = [label2assign, label_strength]
             
-    except Exception as e1:
-        print('unknown exception: '+str(e1))
+    # except Exception as e1:
+        # print('unknown exception: '+str(e1))
         #quit
-    
     
     return labels_th
 
@@ -147,7 +139,7 @@ def build_chunks( input_path, output_path, duration , sample_rate, thresholds, u
     for filename in filenames:
         offset=0
         chunk_id =0
-        
+        print(filename)
         while 1:
             try:
                 ## Read one chunk of "duration" seconds at a time
@@ -192,8 +184,6 @@ def build_chunks( input_path, output_path, duration , sample_rate, thresholds, u
                 if save_chunks and (not os.path.exists(output_path+chunk_name+'.wav')): #saves only if option is chosen and if block file doesn't already exist.
                     librosa.output.write_wav(output_path + chunk_name+'.wav', chunk, sr)
                     #print( '-----------------Saved wav file for segment '+str(block_id))
-                
-                    
                     
             else :
                 #print('----------------- no more segments for this file--------------------------------------')
