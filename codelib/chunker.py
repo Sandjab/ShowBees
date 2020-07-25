@@ -62,16 +62,17 @@ def dataset_dirname(sample_rate=22050, duration=1, overlap=0):
     return 'chunks_SR' + str(sample_rate) + "Hz_DUR" + str(duration) + 's_OVL' + str(overlap) + "s"
     
 def build_dataset(dataset_name, input_path, duration=1, overlap=0, sample_rate=22050, thresholds=[0]):
+    """Build dataset chunks, from a dataset name"""
     manifest = mooltipath('datasets', 'MNF_' + dataset_name + '.lof')
     assert manifest.is_file(), 'No manifest found for dataset ' + dataset_name
 
     with open(manifest, 'r') as f:
         filenames = f.read().split('\n')
         output_path = mooltipath('datasets', dataset_name, dataset_dirname(sample_rate, duration, overlap))
-        build_chunks(input_path, output_path, duration, overlap, sample_rate, thresholds, filenames)
+        build_chunks(input_path, output_path, duration, overlap, sample_rate, thresholds, filenames[1:])
     return
 
-def build_chunks(input_path, output_path, duration=1, overlap=0, sample_rate=22050, thresholds=[0], filenames=None, use_annotations=True, save_chunks=True):
+def build_chunks(input_path, output_path, duration=1, overlap=0, sample_rate=22050, thresholds=[0], filenames=None, use_annotations=True):
     """Slice all sound files (*.wav and *.mp3) within a directory into chunks, and assign labels to these chunks
 
     Extended description here
@@ -82,13 +83,10 @@ def build_chunks(input_path, output_path, duration=1, overlap=0, sample_rate=220
         duration (int):
         overlap (int):
         sample_rate (int):
-        thresholds ([float]):
-        use_annotations (bool):
-        save_chunks (bool):
 
     Returns:
-        Nothing
-
+        nb_files (int):
+        nb_chunks (int):
     """
 
     #Sanity check
@@ -107,8 +105,11 @@ def build_chunks(input_path, output_path, duration=1, overlap=0, sample_rate=220
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
+
+    nb_files = len(filenames)
+    nb_chunks = 0
     # Announce planned work
-    printb("Processing "+str(len(filenames)) + " audio files.")
+    printb("Processing "+str(nb_files) + " audio files.")
 
     # Walk the file list
     for filename in filenames:
@@ -127,40 +128,63 @@ def build_chunks(input_path, output_path, duration=1, overlap=0, sample_rate=220
         if (n<=0):
             continue
         
+        # Get one chunk of "duration" seconds at a time
         for i in range(n):
-            # Get one chunk of "duration" seconds at a time
-            start_t = i*(duration-overlap)
-            end_t = start_t + duration
-            chunk = source[int(start_t*sr):int(end_t*sr)]
+            nb_chunks += 1
             chunk_name = filename[0:-4] + '_chunk' + str(i).zfill(4)
-
-            # Process annotations, if requested:
-            if use_annotations:
-                for th in thresholds:
-                    label_file_name = os.path.join(output_path, 'labels_th'+str(th)+'.csv')
-                    label_file_exists = os.path.isfile(label_file_name)
-                    with open(label_file_name, 'a', newline='') as label_file:
-                        writer = csv.DictWriter(label_file, fieldnames=[
-                            'name', 'start_t', 'end_t', 'strength', 'label'], delimiter=',')
-                        if not label_file_exists:
-                            writer.writeheader()
-
-                        label_block_th = save_labels(
-                            filename, chunk_name,  start_t, end_t, input_path, th)
-
-                        writer.writerow({'name': chunk_name, 'start_t': start_t, 'end_t': end_t,
-                                         'strength': label_block_th[1],  'label': label_block_th[0]})
-
-                # Save chunk, if requested:
-                # saves only if option is chosen and if block file doesn't already exist.
-                save_path = os.path.join(output_path, chunk_name + '.wav')
-                if save_chunks and (not os.path.exists(save_path)):
-                    librosa.output.write_wav(save_path, chunk, sr)
+            save_path = os.path.join(output_path, chunk_name + '.wav')
+            # Save chunk, only if file doesn't already exist.
+            if not os.path.exists(save_path):
+                start_t = i*(duration-overlap)
+                end_t = start_t + duration
+                chunk = source[int(start_t*sr):int(end_t*sr)]
+                librosa.output.write_wav(save_path, chunk, sr)
 
     printb('---------------------- Done ----------------------')
 
-    return
+    return nb_files, nb_chunks
 
+
+def label_chunks(input_path, output_path, discard_label, duration=1, overlap=0, thresholds=[0], filenames=None):
+    #Sanity check
+    assert duration > 0, "duration must be strictly positive"
+    assert overlap >= 0, "overlap must be positive or zero"
+    assert overlap < duration, "overlap must be strictly less than duration"
+
+    if not filenames:
+        # Build audio filenames list (both wav and mp3)
+        paths = glob.glob(os.path.join(input_path, '*.mp3'))
+        paths.extend(glob.glob(os.path.join(input_path, '*.wav'))) 
+        filenames = [os.path.basename(x) for x in paths]
+
+    # Announce planned work
+    printb("Processing "+str(len(filenames)) + " audio files.")
+
+    # Walk the file list
+    for filename in filenames:
+        if (filename == '') or (filename.startswith('#')):
+            continue
+
+        print(filename)
+        chunk_name = filename[0:-4] + '_chunk' + str(i).zfill(4)
+
+        # Process annotations:
+        for th in thresholds:
+            label_file_name = Path(output_path, 'labels_th'+str(th)+'.csv')
+            label_file_exists = label_file_name.isfile()
+            with open(label_file_name, 'a', newline='') as label_file:
+                writer = csv.DictWriter(label_file, fieldnames=[
+                            'name', 'start_t', 'end_t', 'strength'], delimiter=',')
+                if not label_file_exists:
+                    writer.writeheader()
+
+                label_block_th = save_labels(filename, chunk_name,  start_t, end_t, input_path, th)
+
+                writer.writerow({'name': chunk_name, 'start_t': start_t, 'end_t': end_t,
+                                'strength': label_block_th[1],  'label': label_block_th[0]})
+    printb('---------------------- Done ----------------------')
+
+    return
 
 # states: state_labels=['active','missing queen','swarm' ]
 def read_HiveState_fromSampleName(filename, states):
@@ -202,6 +226,8 @@ def write_Statelabels_from_beeNotBeelabels(path_save, path_labels_BeeNotBee, sta
                 else:
                     liste.append(row[0])
     return liste
+
+
 
 
 def get_list_samples_names(path_audioSegments_folder, extension='.wav'):
