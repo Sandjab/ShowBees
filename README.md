@@ -153,15 +153,13 @@ In addition to the various functions available within the codelib directory modu
 - **mooltipath**: *mooltipath(\*args)* is a function part of the codelib `jupytools` module.
   - When imported, it walks from the current directory up to the first directory containing a `.here` file and build an absolute path joining this root directory path with the list of paths passed in \*args (This operation is performed once).
   - As such, it allows to use stable paths relative this root directory, independant from the notebook location.
-  - It is operating system agnostic and takes care of any needed path normalization (/ vs \\). So you can always use '/' as a separator when defining path strings. I
+  - It is operating system agnostic and takes care of any needed path normalization (/ vs \\). So you can always use '/' as a separator when defining path strings.
 
 Ex:
 
-Let's say this repository resides locally on your computer in C:\Users\me\ShowBees
+Let's say this repository resides locally on your computer in *C:\Users\me\ShowBee*s
 
-And that you have a notebook in the experiments/EXP01 directory withing this repository (actually, this is not relevant)
-
-Then
+And that you have a notebook in the *experiments/EXP01* directory withing this repository (actually, this is not relevant), with the folloinwg code:
 
 ```python
 import proxycodelib
@@ -186,9 +184,6 @@ print(mooltipath('/a', '/b', 'c', '/d')) # will print C:\d
 print(mooltipath('a')) # will print C:/Users/me/ShowBees/a
 print(mooltipath('a/b','c\\d/e', 'f/foo.bar')) # will print C:\Users\me\ShowBees\a\b\c\d\e\f\foo.bar
 ```
-
-
-
 
 
 ---
