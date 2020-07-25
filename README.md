@@ -60,9 +60,6 @@ or
 pip install ipywidgets
 jupyter nbextension enable --py widgetsnbextension
 ```
-or
-
-
 
 ## System Information
 
@@ -151,10 +148,45 @@ To replicate an experiment, you should:
   
 ## How to add or extend an experiment  
 
-In addition to the various functions available within the codelib directory's modules, two specific mechanisms are provided to enable the proposed repository structure:
+In addition to the various functions available within the codelib directory modules, two specific mechanisms are provided to enable the proposed repository structure:
 
-- **proxycodelib** : proxicodelib is a module that should be imported in any botebook willing to make use of a function from the codelib directory.
-- **mooltipath**:
+- **proxycodelib** : proxicodelib is a module that should be imported in any notebook willing to make use of a function from the codelib directory. It make the codelib modules accessible from anywhere in the repository.
+- **mooltipath**: *mooltipath(*args)* is a function part of the codelib `jupytools` module.
+  - When imported, it walks from the current directory up to the first directory containing a `.here` file and build an absolute path joining this root directory path with the list of paths passed in \*args (This operation is performed once).
+  - As such, it allows to use stable paths relative this root directory, independant from the notebook location.
+  - It is operating system agnostic and takes care of any needed path normalization (/ vs \\). So you can always use '/' as a separator when defining path strings. I
+
+Ex:
+
+Let's say this repository resides locally on your computer in C:\Users\me\ShowBees
+
+And that you have a notebook in the experiments/EXP01 directory withing this repository (actually, this is not relevant)
+
+Then
+
+```python
+import proxycodelib
+from jupytools import mooltipath
+
+# Without arguments
+# will print the repository root directory C:/Users/me/ShowBees
+print(mooltipath())
+
+# if any argument has a leading slash, will build an absolute path
+# directlyusing the last argument with leading slash
+#
+print(mooltipath('/a')) # will print C:\a
+print(mooltipath('/a', '/b', '/c')) # will print C:\c
+print(mooltipath('/a', '/b', 'c', '/d')) # will print C:\d
+
+# if there is no argument with a leading slash (ony relative paths)
+# will build an absolute path by joining these relative paths,
+# using the repository root directory as a starting point
+# (This is the most useful case)
+#
+print(mooltipath('a')) # will print C:/Users/me/ShowBees/a
+print(mooltipath('a/b','c\\d/e', 'f/foo.bar')) # will print C:\Users\me\ShowBees\a\b\c\d\e\f\foo.bar
+```
 
 
 
