@@ -150,7 +150,7 @@ To replicate an experiment, you should:
 In addition to the various functions available within the codelib directory modules, two specific mechanisms are provided to enable the proposed repository structure:
 
 - **proxycodelib** : proxicodelib is a module that should be imported in any notebook willing to make use of a function from the codelib directory. It make the codelib modules accessible from anywhere in the repository.
-- **mooltipath**: *mooltipath(*args)* is a function part of the codelib `jupytools` module.
+- **mooltipath**: *mooltipath(\*args)* is a function part of the codelib `jupytools` module.
   - When imported, it walks from the current directory up to the first directory containing a `.here` file and build an absolute path joining this root directory path with the list of paths passed in \*args (This operation is performed once).
   - As such, it allows to use stable paths relative this root directory, independant from the notebook location.
   - It is operating system agnostic and takes care of any needed path normalization (/ vs \\). So you can always use '/' as a separator when defining path strings. I
