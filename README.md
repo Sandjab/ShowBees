@@ -192,7 +192,7 @@ print(mooltipath('a/b','c\\d/e', 'f/foo.bar')) # will print C:\Users\me\ShowBees
 - Reference datasets used in this repo are built from:
   - https://zenodo.org/record/1321278
   
-- Documentation was generated with **Sphinx** ( https://www.sphinx-doc.org/ )
+- Documentation was generated with **Sphinx** ( https://www.sphinx-doc.org/ ) and using the Napeoleon extension (https://www.sphinx-doc.org/en/master/usage/extensions/napoleon.html)
 
 - Detailed notebook hardware, os, language and libraries signature was performed using **watermark** ( https://github.com/rasbt/watermark )
 
