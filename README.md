@@ -90,13 +90,12 @@ interpreter: 64bit
 ---
 ## Repository structure
 
-The root directory containsthe following files:
+The root directory contains the following files:
 
 - this **README.md** file
-- a **.here** empty file, needed to mark the directory as top-level, thus allowing the mooltipath mechanism (described later in this document) to work from any subsdirectory of any depth 
+- a **.here** empty file, needed to mark the directory as top-level, thus allowing the mooltipath mechanism (described later in this document) to work from any subdirectory at any depth 
 
 And directories:
-
  
 - an **experiments** directory containing:
   - one subdirectory EXPxyz_*<EXPERIMENT_NAME_IN_SNAKE_CASE>* for each experiment
