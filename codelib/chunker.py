@@ -1,4 +1,6 @@
 # ===== Standard imports
+from pathlib import Path
+from jupytools import mooltipath
 import os
 import glob
 import csv
@@ -9,9 +11,6 @@ import numpy as np
 
 # ===== Local imports
 from info import printb, printr, printp, print
-
-def get_chunks_dirname(sample_rate=22050, duration=1, overlap=0):
-    return 'chunks_SR' + str(sample_rate) + "Hz_DUR" + str(duration)+'s_OVL' + str(overlap) + "s"
 
 
 def save_labels(audiofilename, chunk_name,  chunk_start_t, chunk_end_t, annotations_path, threshold=0):
@@ -59,7 +58,20 @@ def save_labels(audiofilename, chunk_name,  chunk_start_t, chunk_end_t, annotati
     return labels_th
 
 
-def build_chunks(input_path, output_root_path, duration=1, overlap=0, sample_rate=22050, thresholds=[0], use_annotations=True, save_chunks=True):
+def dataset_dirname(sample_rate=22050, duration=1, overlap=0):
+    return 'chunks_SR' + str(sample_rate) + "Hz_DUR" + str(duration) + 's_OVL' + str(overlap) + "s"
+    
+def build_dataset(dataset_name, input_path, duration=1, overlap=0, sample_rate=22050, thresholds=[0]):
+    manifest = mooltipath('datasets', 'MNF_' + dataset_name + '.lof')
+    assert manifest.is_file(), 'No manifest found for dataset ' + dataset_name
+
+    with open(manifest, 'r') as f:
+        filenames = f.read().split('\n')
+        output_path = mooltipath('datasets', dataset_name, dataset_dirname(sample_rate, duration, overlap))
+        build_chunks(input_path, output_path, duration, overlap, sample_rate, thresholds, filenames)
+    return
+
+def build_chunks(input_path, output_path, duration=1, overlap=0, sample_rate=22050, thresholds=[0], filenames=None, use_annotations=True, save_chunks=True):
     """Slice all sound files (*.wav and *.mp3) within a directory into chunks, and assign labels to these chunks
 
     Extended description here
@@ -85,13 +97,13 @@ def build_chunks(input_path, output_root_path, duration=1, overlap=0, sample_rat
     assert sample_rate <= 44100 and sample_rate >= 1024, "sample_rate must belong to [1024 - 44100]"
     assert overlap < duration, "overlap must be strictly less than duration"
 
-    # Build audio filenames list (both wav and mp3)
-    paths = glob.glob(os.path.join(input_path, '*.mp3'))
-    paths.extend(glob.glob(os.path.join(input_path, '*.wav'))) 
-    filenames = [os.path.basename(x) for x in paths]
+    if not filenames:
+        # Build audio filenames list (both wav and mp3)
+        paths = glob.glob(os.path.join(input_path, '*.mp3'))
+        paths.extend(glob.glob(os.path.join(input_path, '*.wav'))) 
+        filenames = [os.path.basename(x) for x in paths]
 
     # Create output directory, if needed
-    output_path = os.path.join(output_root_path, get_chunks_dirname(sample_rate, duration, overlap)) 
     if not os.path.exists(output_path):
         os.makedirs(output_path)
 
@@ -100,6 +112,9 @@ def build_chunks(input_path, output_root_path, duration=1, overlap=0, sample_rat
 
     # Walk the file list
     for filename in filenames:
+        if (filename == '') or (filename.startswith('#')):
+            continue
+
         print(filename)
 
         # load full sound file at once

@@ -20,20 +20,14 @@ Install it with `python -m pip install soundFile --user`
 
 *Note: to allow mp3 file management in a Windows Anaconda install of Jupyter you may need to install additional codecs:*
 
-Install the needed codecs with: `conda install -c conda-forge ffmpeg`
-
-
-### Pydub
-`conda install -c conda-forge pydub`
-
-### PySox
+Install the needed codecs either with: `conda install -c conda-forge ffmpeg` or pip
 
 
 ### pyprojroot
 
 Allows finding root directory in Python projects, just like the **R** `here` and `rprojroot` packages.
 
-`conda install -c conda-forge pyprojroot`
+Install it using `conda install -c conda-forge pyprojroot` or pip
 
 ### checksumdir
 
@@ -58,13 +52,17 @@ print(directory, md5hash)
 
 This is needed in order to use nice widgets in the Jupyter environment, in particular progress bars, thus avoiding cluttering your notebooks' output with endless log lines just for progress tracking purpose.
 
+
+Install it using `conda install -c conda-forge ipywidgets`
+
+or
 ```
 pip install ipywidgets
 jupyter nbextension enable --py widgetsnbextension
 ```
 or
 
-`conda install -c conda-forge ipywidgets`
+
 
 ## System Information
 
@@ -95,38 +93,46 @@ interpreter: 64bit
 ---
 ## Repository structure
 
-- the **experiments** directory contains:
-  - one subdirectory EXPxyz for each experiment
-  - a README.md file with the list of experiments (experiment code EXPxyz, name, and short description), as well as an introduction to the experiments common process, if needed.
+The root directory containsthe following files:
 
-- each **experiments/EXPxyz** directory contains:
+- this **README.md** file
+- a **.here** empty file, needed to mark the directory as top-level, thus allowing the mooltipath mechanism (described later in this document) to work from any subsdirectory of any depth 
+
+And directories:
+
+ 
+- an **experiments** directory containing:
+  - one subdirectory EXPxyz_*<EXPERIMENT_NAME_IN_SNAKE_CASE>* for each experiment
+  - a README.md file with the list of experiments (experiment name and short description), as well as an introduction to the experiments common process, if needed.
+
+- each **experiments/EXPxyz_*<EXPERIMENT_NAME_IN_SNAKE_CASE>*** directory contains:
   - a README.md file with a detailed description of the experiment
   - the notebook(s) used to conduct the experiment,
   - optionnaly, output files produced during the notebook(s) execution. If needed, adhoc subdirectories may be used for organizational purposes.
-  - optionnaly, python files specific to this experiment (see Rules below). If needed, adhoc subdirectories may be used for organizational purposes.
-
-- the **codelib** directory contains:
+  - optionnaly, python files specific to this experiment (see Rules below). If needed, adhoc subdirectories may be used for organizational purposes.  
+  
+- a **codelib** directory containing:
   - all python modules shared by the aforementioned notebooks,
   - a README.md with a short description of each module's purpose
-  - Adhoc subdirectories may be used to organize modules per domain (e.g. preprocessing, classifiers, visualization, etc...)
+  - Adhoc subdirectories may be used to organize modules per domain (e.g. preprocessing, classifiers, visualization, etc...)  
   
-- the **datasets** directory contains:
-  - a **reference** subdirectory where you have to copy reference datasets. Empty at initialisation time.
-  - an **experiments**' subdirectory where experiment datasets will be built from the reference datasets. Empty at initialisation time.
+- a **datasets** directory containing:
+  - one manifest (*.lof = **l**ist **o**f **f**iles) file per dataset, listing de raw data (sound) files part of this dataset   
+  - one subdirectory per dataset where experiment datasets will be built from the reference dataset, unsing the coresponding manifests. These subdirectories don't exist at initialisation time and willbe created dynamically.  
   
-*Note: Within the dataset directory, all files but *.md files are .gitignored*
+*Note: Within the `datasets` directory, all subdirectory are .gitignored*
   
 --- 
 ## Repository Guidelines
 
 This repository has been built having in mind theses guidelines:
 
-- A python code (.py) file must never be duplicated across experiments. The codelib directory specifically exists for the purpose of allowing common code sharing between experiments.
+- A python code (.py) file must never be duplicated across experiments. The codelib directory specifically exists for the specific purpose of allowing common code sharing between experiments.
 - Duplication of IPython code between notebooks is obviously allowed, but must be limited to:
   - parameters setting, orchestration of macro functions calls and results visualisation (notebooks' code should be sequential without any complex logic)
-  - exploratory snippets not meant for experiment replication (non trustable)
-- Python code (.py) files specific to a given experiment should be avoided in this experiment directory (as the repository normally contains only related experiments, which are in fact various scenarii around a same domain, they should generally use common code).
-- Re-implementations of notebooks as selfcontained regular python files for execution out of interactive python environment is a notable exception to the above rule.   
+  - exploratory snippets not meant for experiment replication (non trustable). They should ideally reside in a `snippets` subdirectory
+- Python code (.py) files specific to a given experiment should be avoided in this experiment directory (as the repository normally contains only related experiments, which are in fact various scenarii around a same domain, they should generally use common code). Eaxh time it's possible, the code must be made as generic an reusable as possible, at least in the context of the proposet repository structure
+- `proxycodelib.py`(see below) file as well as implementations of notebooks as selfcontained regular python files for execution out of interactive python environment are to notable exceptions to the above rule.   
   
 --- 
 ## How to replicate an experiment
@@ -134,11 +140,26 @@ This repository has been built having in mind theses guidelines:
 To replicate an experiment, you should:
 
 - **Build the input dataset from a reference dataset** : As datasets may be quite large, they are not saved in this repository, and must be build using the following steps: 
-  - Get the reference dataset: Reference datasets must be retrieved from the internet. Links to these datasets are provided at the bottom of this file, as well as in the **datasets** README. Download them and save them in a subdirectory of the datasets/reference directory.  
-  - Build the experiment dataset: Experiments datasets are subsets or mixtures of the reference datasets. Their content is detailled in the experiment README. You should build the required experiment dataset according to its description by cherry-picking files from a reference dataset, and save them in a specific directory.
-  - Check the experiment dataset: Compute a MD5 hash over the directory you just created. This hash should be identical to the one provided in the experiment dataset detailed description. If not, check that the files list is correct. 
-  - From this point, you have reasonably insured that you have the same initial conditions than the original experiment (and so, you can expect to obtain the same results;-) )
-   
+  - Get the reference dataset: Reference datasets must be retrieved from the internet. Links to these datasets are provided at the bottom of this file, as well as in the **datasets** README. Download them and save them in a directory somewhere on your computer.
+  - Build the experiment dataset: 
+    - Experiments datasets are subsets or mixtures of the reference datasets.
+    - Their content is detailled in the corresponding manifest in the `datasets` directory.
+    - They can be either built on the fly when running an experiment for the first time, or upfront using the generic notebook present in the `datasets` directory
+    - Check the experiment dataset: Compute a MD5 hash over the directory you just created. This hash should be identical to the one provided in the experiment dataset detailed description. If not, check that the files list is correct. 
+    - From this point, you have reasonably insured that you have the same initial conditions than the original experiment (and so, you can expect to obtain the same results;-) )
+  
+  
+## How to add or extend an experiment  
+
+In addition to the various functions available within the codelib directory's modules, two specific mechanisms are provided to enable the proposed repository structure:
+
+- **proxycodelib** : proxicodelib is a module that should be imported in any botebook willing to make use of a function from the codelib directory.
+- **mooltipath**:
+
+
+
+
+
 ---
 ## Credits & Notes
 - Most of this repository code is a reuse of the (either untouched, slightly modified or heavily refactored) code from:

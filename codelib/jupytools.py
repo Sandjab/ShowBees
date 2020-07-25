@@ -1,8 +1,7 @@
 from pyprojroot import here
-from os import fspath
-from os.path import join
+from pathlib import Path
 
-rootpath = fspath(here())
+rootpath = here()
 
-def mooltipath(relpath=''):
-    return join(rootpath, relpath)
+def mooltipath(*args):
+    return rootpath.joinpath(*args)
