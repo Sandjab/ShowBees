@@ -155,11 +155,7 @@ In addition to the various functions available within the codelib directory modu
   - As such, it allows to use stable paths relative this root directory, independant from the notebook location.
   - It is operating system agnostic and takes care of any needed path normalization (/ vs \\). So you can always use '/' as a separator when defining path strings.
 
-Ex:
-
-Let's say this repository resides locally on your computer in *C:\Users\me\ShowBee*s
-
-And that you have a notebook in the *experiments/EXP01* directory withing this repository (actually, this is not relevant), with the folloinwg code:
+**Example:** Let's say this repository resides locally on your computer in *C:\Users\me\ShowBees*, and that you have a notebook ANYWHERE in the this repository. Then the following notebook code will ALWAYS gives the same results (meaning that you can move around yout notebook without changing its behaviour.
 
 ```python
 import proxycodelib
