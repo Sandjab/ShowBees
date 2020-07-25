@@ -155,7 +155,7 @@ In addition to the various functions available within the codelib directory modu
   - As such, it allows to use stable paths relative this root directory, independant from the notebook location.
   - It is operating system agnostic and takes care of any needed path normalization (/ vs \\). So you can always use '/' as a separator when defining path strings.
 
-**Example:** Let's say this repository resides locally on your computer in *C:\Users\me\ShowBees*, and that you have a notebook ANYWHERE in the repository tree. Then the following notebook code will ALWAYS gives the same results (meaning that you can move around yout notebook without changing its behaviour.
+**Example:** Let's say this repository resides locally on your computer in *C:\Users\me\ShowBees*, and that you have a notebook ANYWHERE in the repository tree. Then the following notebook code will ALWAYS gives the same results (meaning that you can move around your notebook without changing its behaviour).
 
 ```python
 import proxycodelib
@@ -175,7 +175,7 @@ print(mooltipath('/a', '/b', 'c', '/d')) # will print C:\d
 # if there is no argument with a leading slash (ony relative paths)
 # will build an absolute path by joining these relative paths,
 # using the repository root directory as a starting point
-# (This is the most useful case)
+# (This is the most useful case, for instance to address a dataset from a notebook)
 #
 print(mooltipath('a')) # will print C:/Users/me/ShowBees/a
 print(mooltipath('a/b','c\\d/e', 'f/foo.bar')) # will print C:\Users\me\ShowBees\a\b\c\d\e\f\foo.bar
