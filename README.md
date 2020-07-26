@@ -31,26 +31,16 @@ Install it using `conda install -c conda-forge pyprojroot` or pip
 
 ### checksumdir
 
-To allow replicability checks, output directories of various processes within this repository are "signed" using a md5 hash. This reference hash is "frozen" in each experiment manifest.
+To allow replicability checks, output directories of various processes within this repository are "signed" using a md5 hash. This reference hash is usually available in each experiment notebook.
 
 As this hash is displayed at the end of each major process completion, one can infer at a glance if the obtained result shares the same hash as the reference experiment he or she is trying to replicate.
 
 Install it using: `python -m pip install checksumdir --user`
 
-You may now use it as follow:
-```python
-from checksumdir import dirhash
-
-directory  = 'D://path/to/directory'
-md5hash    = dirhash(directory, 'md5')
-
-print(directory, md5hash)
-```
-
 
 ### ipywidgets
 
-This is needed in order to use nice widgets in the Jupyter environment, in particular progress bars, thus avoiding cluttering your notebooks' output with endless log lines just for progress tracking purpose.
+This is needed in order to use nice widgets in the Jupyter Notebook environment, in particular progress bars, thus avoiding cluttering your notebooks' output with endless log lines just for progress tracking purpose.
 
 
 Install it using `conda install -c conda-forge ipywidgets`
@@ -60,6 +50,12 @@ or
 pip install ipywidgets
 jupyter nbextension enable --py widgetsnbextension
 ```
+
+If you use Jupyter Lab rather than Jupyter Notebook, you also need to install the jupyter lab extension either viathe Extension Manager Tab of Jupyter lab, or vi command line:
+`jupyter labextension install @jupyter-widgets/jupyterlab-manager`
+wich requires you have nodejs installed. If not:
+`conda install -c conda-forge nodejs`
+
 
 ## System Information
 

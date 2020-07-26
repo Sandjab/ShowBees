@@ -1,15 +1,16 @@
 # ===== Standard imports
-from pathlib import Path
-from jupytools import mooltipath
 import os
 import glob
+from pathlib import Path
 import csv
 
 # ===== 3rd party imports
+from checksumdir import dirhash
 import librosa
 import numpy as np
 
 # ===== Local imports
+from jupytools import mooltipath
 from info import printb, printr, printp, print
 
 
@@ -61,18 +62,21 @@ def save_labels(audiofilename, chunk_name,  chunk_start_t, chunk_end_t, annotati
 def dataset_dirname(sample_rate=22050, duration=1, overlap=0):
     return 'chunks_SR' + str(sample_rate) + "Hz_DUR" + str(duration) + 's_OVL' + str(overlap) + "s"
     
-def build_dataset(dataset_name, input_path, duration=1, overlap=0, sample_rate=22050, thresholds=[0]):
+def build_dataset(dataset_name, input_path, duration=1, overlap=0, sample_rate=22050):
     """Build dataset chunks, from a dataset name"""
     manifest = mooltipath('datasets', 'MNF_' + dataset_name + '.lof')
+    print("Looking for manifest ", manifest)
     assert manifest.is_file(), 'No manifest found for dataset ' + dataset_name
 
     with open(manifest, 'r') as f:
         filenames = f.read().split('\n')
         output_path = mooltipath('datasets', dataset_name, dataset_dirname(sample_rate, duration, overlap))
-        build_chunks(input_path, output_path, duration, overlap, sample_rate, thresholds, filenames[1:])
-    return
+        _, nb_files, nb_chunks = build_chunks(input_path, output_path, duration, overlap, sample_rate, filenames)
+        md5h = dirhash(output_path, 'md5')
 
-def build_chunks(input_path, output_path, duration=1, overlap=0, sample_rate=22050, thresholds=[0], filenames=None, use_annotations=True):
+    return output_path, nb_files, nb_chunks, md5h 
+
+def build_chunks(input_path, output_path, duration=1, overlap=0, sample_rate=22050, filenames=None):
     """Slice all sound files (*.wav and *.mp3) within a directory into chunks, and assign labels to these chunks
 
     Extended description here
@@ -113,9 +117,6 @@ def build_chunks(input_path, output_path, duration=1, overlap=0, sample_rate=220
 
     # Walk the file list
     for filename in filenames:
-        if (filename == '') or (filename.startswith('#')):
-            continue
-
         print(filename)
 
         # load full sound file at once
@@ -140,12 +141,12 @@ def build_chunks(input_path, output_path, duration=1, overlap=0, sample_rate=220
                 chunk = source[int(start_t*sr):int(end_t*sr)]
                 librosa.output.write_wav(save_path, chunk, sr)
 
-    printb('---------------------- Done ----------------------')
+    printb('Done')
 
-    return nb_files, nb_chunks
+    return output_path, nb_files, nb_chunks
 
 
-def label_chunks(input_path, output_path, discard_label, duration=1, overlap=0, thresholds=[0], filenames=None):
+def filter_chunks(input_path, output_path, discard_label, duration=1, overlap=0, thresholds=[[0,0]], filenames=None):
     #Sanity check
     assert duration > 0, "duration must be strictly positive"
     assert overlap >= 0, "overlap must be positive or zero"
@@ -170,7 +171,7 @@ def label_chunks(input_path, output_path, discard_label, duration=1, overlap=0, 
 
         # Process annotations:
         for th in thresholds:
-            label_file_name = Path(output_path, 'labels_th'+str(th)+'.csv')
+            label_file_name = Path(output_path, 'filter_U'+str(th[0])+'_G'+str(th[1]) + '.csv')
             label_file_exists = label_file_name.isfile()
             with open(label_file_name, 'a', newline='') as label_file:
                 writer = csv.DictWriter(label_file, fieldnames=[
@@ -178,7 +179,38 @@ def label_chunks(input_path, output_path, discard_label, duration=1, overlap=0, 
                 if not label_file_exists:
                     writer.writeheader()
 
-                label_block_th = save_labels(filename, chunk_name,  start_t, end_t, input_path, th)
+                label_block_th = save_labels(filename, chunk_name, start_t, end_t, input_path, th)
+                
+                with open(os.path.join(annotations_path, annotation_filename), 'r') as f:
+                    lines = f.read().split('\n')
+                    sum_nobee = 0
+                    for line in lines:
+                        if (line == annotation_filename[0:-4]) or (line == '.') or (line == ''):
+                            # ignores title, '.', or empty line on the file.
+                            continue
+
+                        parsed_line = line.split('\t')
+
+                        assert (len(parsed_line) == 3), ('expected 3 fields in each line, got: '+str(len(parsed_line)))
+
+                        tp0 = float(parsed_line[0])
+                        tp1 = float(parsed_line[1])
+                        label = parsed_line[2]
+
+                        # no need to read further annotation starting after chunk end
+                        if tp0 > chunk_end_t:
+                            break
+
+                        # skip annotation ending before chunk start 
+                        if tp1 < chunk_start_t:
+                            continue
+
+                        # only consider nobee intervals longer than threshold
+                        if label == discard_label and (tp1 - tp0) >= threshold:
+                            sum_nobee = sum_nobee + min(tp1, chunk_end_t) - max(chunk_start_t, tp0)
+
+                            if (sum_nobee > 0):
+                                labels_th = ["nobee", round(sum_nobee/chunk_length, 3)]
 
                 writer.writerow({'name': chunk_name, 'start_t': start_t, 'end_t': end_t,
                                 'strength': label_block_th[1],  'label': label_block_th[0]})
