@@ -51,9 +51,12 @@ pip install ipywidgets
 jupyter nbextension enable --py widgetsnbextension
 ```
 
-If you use Jupyter Lab rather than Jupyter Notebook, you also need to install the jupyter lab extension either viathe Extension Manager Tab of Jupyter lab, or vi command line:
+If you use Jupyter Lab rather than Jupyter Notebook, you also need to install the Jupyter Jab extension either via the Extension Manager tab in Jupyter Lab, or via command line:
+
 `jupyter labextension install @jupyter-widgets/jupyterlab-manager`
-wich requires you have nodejs installed. If not:
+
+which requires you have nodejs installed. If not:
+
 `conda install -c conda-forge nodejs`
 
 
