@@ -1,8 +1,10 @@
 CONSTITUTION DES CHUNKS
 
-La labelisation bee/nobee se base sur un aggrégat de la durée des sons extérieurs ne prenant en compte que les perturbations dont la durée unitaire est supérieure à un seuil passé en paramètre.
+La labelisation bee/nobee d'un segment se base sur un agrégat de la durée des sons extérieurs ne prenant en compte que les perturbations dont la durée unitaire est supérieure à un seuil passé en paramètre.
 
-Si l'agrégat est non nul, le segment est considéré "nobee".
+Si cet agrégat est non nul, le segment est considéré "nobee".
+
+Cependant, de la façon dont c'est calculé (sur la longueur de l'évenement nobee, sans considérer son recouvrement avec un segment, on rejette trop de segments. Par exemple,avec un seuil à 0.5s
 
 Sur des segments courts, cela a peu d'importance, mais sur des segments longs, il vaudrait sans doute mieux décider en se basant sur un % de perturbation total (durée cumulée de tous les nobee d'un segment quelle que soit leur durée / durée du segment)
 
@@ -22,13 +24,16 @@ GENERAL
  - Passage de os.path à pathlib
  - Refactoring du code et renommages des fichiers, fonctions et variables
 
-CONSTITUTION DES CHUNKS
+PREPROCESSING
  - Amélioration massive des performances (x15) grâce au chargement et resampling du fichier en une seule fois, puis constitution des chunks à partir de l'array 1D obtenu.
+ - Introduction du concept de "manifest" défnissant de façon univoque un dataset
  - Ajout d'un paramètre overlap, permettant de générer des chunks en chevauchement
- - Les chunks sont sauvés dans des sous-repertoires dont la nomenclature est normalisée
+ - Uniformisation du renommage et découpage fonctionnel des fonctions de préprocessing, permettant leur invocation indépendante.
+ - ajout d'un filtre sur le pourcentage de perturbation d'un segment par un bruit externe pour décider de son éligibilité à la labelisation de plus haut niveau (queen swarm, etc)
  - le numéro de chunck est paddé à gauche avec des zéros (pourl'équivalence des tris alphabétiques et chronologiques)
  - Si un chunk n'atteint pas la durée spécifiée (cas potentiel du dernier chunk d'un fichier source), il est n'est tout simplement pas généré. La complétion de ce type de chunk par mirroring a en effet peu d'intérêt pour des durées courtes (où l'on dispose de suffisament de fichiers) , et elle introduit un artefact non maitrisé dans le jeu de test. Si besoin, cela pourra toujour être rajouté ultérieurement.
  - suppression de la gestion partielle des exceptions: l'environnement est suffisament maitrisé pour qu'on puisse se permettre de juste interrompre le traitement
  - a contrario, ajout systématique d'asserts de sanity checks
+
      
  

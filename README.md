@@ -89,6 +89,37 @@ interpreter: 64bit
 ---
 ## Repository structure
 
+```
+ROOT
+├───.README.md
+├───.here
+├───codelib
+│   └─── modules...
+├───datasets
+│   ├───BNB
+│   │   └───chunks_SR22050Hz_DUR1s_OVL0s
+│   ├───MINIMAL
+│   │   ├───chunks_SR22050Hz_DUR1s_OVL0.25s
+│   │   ├───chunks_SR22050Hz_DUR1s_OVL0.5s
+│   │   ├───chunks_SR22050Hz_DUR1s_OVL0.75s
+│   │   └───chunks_SR22050Hz_DUR1s_OVL0s
+│   └───ONE
+│       └───chunks_SR22050Hz_DUR1s_OVL0.75s
+├───docs
+├───experiments
+│   ├───EXP001
+│   │   ├───.ipynb_checkpoints
+│   │   └───__pycache__
+│   └───EXP002
+│       ├───.ipynb_checkpoints
+│       └───__pycache__
+└───snippets
+    ├───.ipynb_checkpoints
+    ├───samples
+    ├───tmp
+    └───__pycache__
+```
+
 The root directory contains the following files:
 
 - this **README.md** file
@@ -112,10 +143,13 @@ And directories:
   - Adhoc subdirectories may be used to organize modules per domain (e.g. preprocessing, classifiers, visualization, etc...)  
   
 - a **datasets** directory containing:
-  - one manifest (*.lof = **l**ist **o**f **f**iles) file per dataset, listing de raw data (sound) files part of this dataset   
-  - one subdirectory per dataset where experiment datasets will be built from the reference dataset, unsing the coresponding manifests. These subdirectories don't exist at initialisation time and willbe created dynamically.  
-  
-*Note: Within the `datasets` directory, all subdirectory are .gitignored*
+  - one manifest (.mnf) file per dataset, defining the dataset (chunck duration , chunk overlap, resampling frequency, list of source audio files) as well as md5 checksums for validation   
+  - one subdirectory per dataset where experiment datasets will be built from external reference datasets. Each of these directories contains:
+    - one **labs** subdirectory, with the .lab files for this dataset
+	- one **chunks** subdirectory with all the audi chunks (.wav) for this dataset
+
+	
+*Note: Within the `datasets` directory, all subdirectories does not exist in git. They will be created dynamically.
   
 --- 
 ## Repository Guidelines
