@@ -38,6 +38,12 @@ As this hash is displayed at the end of each major process completion, one can i
 Install it using: `python -m pip install checksumdir --user`
 
 
+### multiprocess
+
+due to a bug in 3.8, multiprocessing freezes in Jupyter Notebooks so we ue a fork
+
+`conda install -c conda-forge multiprocess`
+
 ### ipywidgets
 
 This is needed in order to use nice widgets in the Jupyter Notebook environment, in particular progress bars, thus avoiding cluttering your notebooks' output with endless log lines just for progress tracking purpose.
@@ -94,30 +100,48 @@ ROOT
 ├───.README.md
 ├───.here
 ├───codelib
-│   └─── modules...
+│    └───modules...
+│
 ├───datasets
-│   ├───BNB
-│   │   └───chunks_SR22050Hz_DUR1s_OVL0s
-│   ├───MINIMAL
-│   │   ├───chunks_SR22050Hz_DUR1s_OVL0.25s
-│   │   ├───chunks_SR22050Hz_DUR1s_OVL0.5s
-│   │   ├───chunks_SR22050Hz_DUR1s_OVL0.75s
-│   │   └───chunks_SR22050Hz_DUR1s_OVL0s
-│   └───ONE
-│       └───chunks_SR22050Hz_DUR1s_OVL0.75s
+│   ├───README.md
+│   ├───<DATASET_NAME>.mnf
+│   ├───<DATASET_NAME>
+│   │   └───dataset.db
+│   │   └───chunks
+│   │       └───000001.wav
+│   │       └───000002.wav
+│   │       └───...
+│   │       └───NNNNNN.wav
+│   └───...
+│
 ├───docs
+│
 ├───experiments
 │   ├───EXP001
-│   │   ├───.ipynb_checkpoints
-│   │   └───__pycache__
-│   └───EXP002
-│       ├───.ipynb_checkpoints
-│       └───__pycache__
+│   │   ├───README.md
+│   │   ├───proxycodelib.py
+│   │   ├───*.ipynb
+│   │   └───...
+│   │
+│   ├───...
+│   │
+│   └───EXPxxx
+│       ├───README.md
+│       ├───proxycodelib.py
+│       ├───*.ipynb
+│       └───...
+│
+├───tutorials
+│   ├───README.md
+│   ├───proxycodelib.py
+│   ├───01-Basics.ipynb
+│   ├───02-Datasets/ipynb
+│   └─── ...
+│
 └───snippets
-    ├───.ipynb_checkpoints
+    ├───*.ipynb
     ├───samples
-    ├───tmp
-    └───__pycache__
+    └───tmp
 ```
 
 The root directory contains the following files:
