@@ -1,6 +1,8 @@
 # ShowBees - Beehive sound analysis
 
-This repository presents several experiments related to the interpretation of sounds produced by bees, as a mean of detecting beehives' health status and stress level.
+This repository presents AuDaCE (Audio Dataset Controlled Environment), a framework aimaing at simplifying the management of machine learning datasets based on audio.
+
+As an illustration, it presents several experiments related to the interpretation of sounds produced by bees, as a mean of detecting beehives' health status and stress level.
 
 ---
 ## Pre-requisites
@@ -37,12 +39,6 @@ As this hash is displayed at the end of each major process completion, one can i
 
 Install it using: `python -m pip install checksumdir --user`
 
-
-### multiprocess
-
-due to a bug in 3.8, multiprocessing freezes in Jupyter Notebooks so we ue a fork
-
-`conda install -c conda-forge multiprocess`
 
 ### ipywidgets
 
