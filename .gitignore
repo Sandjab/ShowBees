@@ -7,6 +7,10 @@
 # Ignore any tmp directory and its content, anywhere
 **/tmp/
 
+**/snippets/
+
+.DS_Store
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
