@@ -5,11 +5,12 @@
 /datasets/*/
 
 # Ignore any tmp directory and its content, anywhere
-**/tmp/
+tmp/
 
+# Ignore any snippets directory and its content, anywhere
 snippets/
-$$/snippets/
 
+# ignore MacOS DS_Store
 .DS_Store
 
 ### Python ###
