@@ -9,6 +9,10 @@ As an illustration, it presents several experiments related to the interpretatio
 In order to execute properly this github code, you'll need **Jupyter notebook** or **Jupiter lab** (https://jupyter.org/), preferably part of a broader **Anaconda** install ( https://www.anaconda.com/products/individual ), as well as the following additional packages/libraries:
 
 
+# tensorflow
+conda create -n tf tensorflow
+conda activate tf
+
 ### librosa
 conda install -c conda-forge librosa
 
