@@ -247,7 +247,7 @@ class AudioDataset:
 
             # Save chunk as audio file
             soundfile.write(
-                self._get_chunk_path(file_idx, chunk_idx),
+                str(self._get_chunk_path(file_idx, chunk_idx)),
                 c_data,
                 sr
             )
