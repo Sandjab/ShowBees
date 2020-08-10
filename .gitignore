@@ -7,7 +7,7 @@
 # Ignore any tmp directory and its content, anywhere
 **/tmp/
 
-**/snippets/
+snippets/
 
 .DS_Store
 
