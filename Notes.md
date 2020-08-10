@@ -30,6 +30,7 @@ STRUCTURANT
 NON STRUCTURANT 
  - Passage systématique de os.path à pathlib
  - suppression de la gestion partielle des exceptions: l'environnement devient suffisament maitrisé pour qu'on puisse se permettre de juste interrompre le traitement
+ - remplacement de librosa.output_write_wav (deprecated et non supporté à partir de la version 0.8.0 de librosa) par soundfile.write
  - a contrario, ajout systématique d'asserts de sanity checks 
 
 DETAIL
