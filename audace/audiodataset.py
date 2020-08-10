@@ -16,7 +16,7 @@ import pandas as pd
 from checksumdir import dirhash
 import librosa
 from tqdm.auto import tqdm
-import soundFile
+import soundfile
 
 # ===== Local imports
 from audace.jupytools import mooltipath, iprint
@@ -246,7 +246,7 @@ class AudioDataset:
             c_data = source[int(c_start_t * sr): int(c_end_t * sr)]
 
             # Save chunk as audio file
-            soundFile.write(
+            soundfile.write(
                 self._get_chunk_path(file_idx, chunk_idx),
                 c_data,
                 sr
