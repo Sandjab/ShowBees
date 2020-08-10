@@ -8,6 +8,10 @@ As an illustration, it presents several experiments related to the interpretatio
 ## Pre-requisites
 In order to execute properly this github code, you'll need **Jupyter notebook** or **Jupiter lab** (https://jupyter.org/), preferably part of a broader **Anaconda** install ( https://www.anaconda.com/products/individual ), as well as the following additional packages/libraries:
 
+
+### librosa
+conda install -c conda-forge librosa
+
 ### numba
 
 *Due to a bug in the current version of librosa, causing a `ModuleNotFoundError: No module named 'numba.decorators'` error message, it is mandatory to downgrade from the latest numba version, and specifically install* ***0.48***
