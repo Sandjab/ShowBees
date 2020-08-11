@@ -10,6 +10,9 @@ tmp/
 # Ignore any snippets directory and its content, anywhere
 snippets/
 
+# Ignore any output directory and its content, anywhere
+output/
+
 # ignore MacOS DS_Store
 .DS_Store
 
