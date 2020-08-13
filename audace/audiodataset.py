@@ -45,6 +45,8 @@ class AudioDataset:
 
         """
 
+        self.ds_name = dataset_name
+
         # wherever you call from, the dataset root path
         # will be the same, \\|// relative to project root,
         # as marked by the -(@ @)- .kilroy flag file
@@ -160,6 +162,7 @@ class AudioDataset:
 
     def info(self):
         iprint("------------------------------------------------------")
+        iprint("DATASET NAME          :", self.ds_name)
         iprint("DATASET PATH          :", self.path)
         iprint("DATASET DB PATH       :", self.db_path)
         iprint("DATASET SAMPLES PATH  :", self.samples_path)
@@ -186,6 +189,7 @@ class AudioDataset:
         c = db.cursor()
         c.execute("SELECT * from config")
         row = dict(c.fetchone())
+        self.ds_name = row["ds_name"]
         self.sample_rate = row["sample_rate"]
         self.duration = row["duration"]
         self.overlap = row["overlap"]
@@ -324,9 +328,16 @@ class AudioDataset:
         # Save configuration to db
         c3 = db.cursor()
         c3.execute(
-            "INSERT INTO config (sample_rate, duration, overlap, nb_samples) "
-            + "VALUES (?,?,?,?)",
-            (self.sample_rate, self.duration, self.overlap, self.nb_samples),
+            "INSERT INTO config"
+            "(ds_name, sample_rate, duration, overlap, nb_samples) "
+            "VALUES (?,?,?,?,?)",
+            (
+                self.ds_name,
+                self.sample_rate,
+                self.duration,
+                self.overlap,
+                self.nb_samples
+            )
         )
 
         # Commit and Close connection to db

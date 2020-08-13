@@ -22,6 +22,7 @@ def create(db_path):
             """
             -- Create table to store AudioDataset configuration
             CREATE TABLE IF NOT EXISTS config(
+                ds_name     TEXT NOT NULL,
                 sample_rate INT NOT NULL,
                 duration    REAL NOT NULL,
                 overlap     REAL NOT NULL,
@@ -53,9 +54,10 @@ def create(db_path):
 
 
 def assert_valid_name(name):
-    assert re.match("^[A-Za-z0-9_]+$", name), \
+    assert re.match("^[a-z0-9_]+$", name), \
         F"Invalid name ({name}. Fields names " \
-        "must contain only ascii letters, digits and underscore)"
+        "must contain only lovercase ascii letters (a-z), " \
+        "digits (0-9) and underscore (_))"
     assert name not in RESERVED_COL_NAMES, \
         F"{name} is a reserved column name"
 
