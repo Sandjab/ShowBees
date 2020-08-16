@@ -38,7 +38,7 @@ class FromString:
         return rows
 
 
-class FromQuery2:
+class FromQuery:
     def __init__(self, source_col, F, where_clause=None):
         self._source_col = source_col
         self._where_clause = where_clause
@@ -53,18 +53,6 @@ class FromQuery2:
         db.create_function("F", 1, self._F)
         c = db.cursor()
         c.execute(sql)
-        rows = c.fetchall()
-        c.close()
-        return rows
-
-
-class FromQuery:
-    def __init__(self, sql):
-        self._sql = sql
-
-    def __call__(self, db, attribute_name):
-        c = db.cursor()
-        c.execute(self._sql)
         rows = c.fetchall()
         c.close()
         return rows

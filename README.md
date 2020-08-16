@@ -1,20 +1,17 @@
 # ShowBees - Beehive sound analysis
 
-This repository presents AuDaCE (Audio Dataset Controlled Environment), a framework aimaing at simplifying the management of machine learning datasets based on audio.
+This repository presents AuDaCE (Audio Dataset Controlled Environment), a framework aiming at simplifying the management of machine learning datasets based on audio.
 
 As an illustration, it presents several experiments related to the interpretation of sounds produced by bees, as a mean of detecting beehives' health status and stress level.
 
 ---
 ## Pre-requisites
-In order to execute properly this github code, you'll need **Jupyter notebook** or **Jupiter lab** (https://jupyter.org/), preferably part of a broader **Anaconda** install ( https://www.anaconda.com/products/individual ), as well as the following additional packages/libraries:
+In order to execute properly this github code, you'll need **Jupyter notebook** or **Jupiter lab** (https://jupyter.org/), preferably part of a broader **Anaconda** install ( https://www.anaconda.com/products/individual ), as well as the following additional packages/libraries that you may install usingiether conda or pip.
 
 
-# tensorflow
-conda create -n tf tensorflow
-conda activate tf
+### tensorflow
 
 ### librosa
-conda install -c conda-forge librosa
 
 ### numba
 
@@ -37,15 +34,12 @@ Install the needed codecs either with: `conda install -c conda-forge ffmpeg` or 
 
 Allows finding root directory in Python projects, just like the **R** `here` and `rprojroot` packages.
 
-Install it using `conda install -c conda-forge pyprojroot` or pip
 
 ### checksumdir
 
 To allow replicability checks, output directories of various processes within this repository are "signed" using a md5 hash. This reference hash is usually available in each experiment notebook.
 
 As this hash is displayed at the end of each major process completion, one can infer at a glance if the obtained result shares the same hash as the reference experiment he or she is trying to replicate.
-
-Install it using: `python -m pip install checksumdir --user`
 
 
 ### ipywidgets
@@ -97,13 +91,13 @@ interpreter: 64bit
 ```
 
 ---
-## Repository structure
+## Recommended Repository structure
 
 ```
 ROOT
 ├───.README.md
 ├───.here
-├───codelib
+├───audace
 │    └───modules...
 │
 ├───datasets
@@ -123,7 +117,7 @@ ROOT
 ├───experiments
 │   ├───EXP001
 │   │   ├───README.md
-│   │   ├───proxycodelib.py
+│   │   ├───kilroy_was_here.py
 │   │   ├───*.ipynb
 │   │   └───...
 │   │
@@ -131,13 +125,13 @@ ROOT
 │   │
 │   └───EXPxxx
 │       ├───README.md
-│       ├───proxycodelib.py
+│       ├───kilroy_was_here.py
 │       ├───*.ipynb
 │       └───...
 │
 ├───tutorials
 │   ├───README.md
-│   ├───proxycodelib.py
+│   ├───kilroy_was_here.py
 │   ├───01-Basics.ipynb
 │   ├───02-Datasets/ipynb
 │   └─── ...
@@ -151,7 +145,7 @@ ROOT
 The root directory contains the following files:
 
 - this **README.md** file
-- a **.here** empty file, needed to mark the directory as top-level, thus allowing the mooltipath mechanism (described later in this document) to work from any subdirectory at any depth 
+- a **.kilroy** file, needed to mark the directory as top-level, thus allowing the mooltipath mechanism (described later in this document) to work from any subdirectory at any depth 
 
 And directories:
  
@@ -165,18 +159,15 @@ And directories:
   - optionnaly, output files produced during the notebook(s) execution. If needed, adhoc subdirectories may be used for organizational purposes.
   - optionnaly, python files specific to this experiment (see Rules below). If needed, adhoc subdirectories may be used for organizational purposes.  
   
-- a **codelib** directory containing:
+- a **audace** directory containing:
   - all python modules shared by the aforementioned notebooks,
   - a README.md with a short description of each module's purpose
   - Adhoc subdirectories may be used to organize modules per domain (e.g. preprocessing, classifiers, visualization, etc...)  
   
 - a **datasets** directory containing:
   - one manifest (.mnf) file per dataset, defining the dataset (chunck duration , chunk overlap, resampling frequency, list of source audio files) as well as md5 checksums for validation   
-  - one subdirectory per dataset where experiment datasets will be built from external reference datasets. Each of these directories contains:
-    - one **labs** subdirectory, with the .lab files for this dataset
-	- one **chunks** subdirectory with all the audi chunks (.wav) for this dataset
+  - one 'samples' subdirectory per dataset where experiment datasets audio chunks will be built from external reference datasets. 
 
-	
 *Note: Within the `datasets` directory, all subdirectories does not exist in git. They will be created dynamically.
   
 --- 
@@ -184,43 +175,43 @@ And directories:
 
 This repository has been built having in mind theses guidelines:
 
-- A python code (.py) file must never be duplicated across experiments. The codelib directory specifically exists for the specific purpose of allowing common code sharing between experiments.
-- Duplication of IPython code between notebooks is obviously allowed, but must be limited to:
-  - parameters setting, orchestration of macro functions calls and results visualisation (notebooks' code should be sequential without any complex logic)
+- A python code (.py) file must never be duplicated across experiments. The audace directory specifically exists for the specific purpose of allowing common code sharing between experiments.
+- Duplication of IPython code  between notebooks is obviously allowed, but must be limited to:
+  - parameters setting, orchestration of macro functions calls and results visualisation (notebooks' code should be as much as possible sequential without any complex logic)
   - exploratory snippets not meant for experiment replication (non trustable). They should ideally reside in a `snippets` subdirectory
-- Python code (.py) files specific to a given experiment should be avoided in this experiment directory (as the repository normally contains only related experiments, which are in fact various scenarii around a same domain, they should generally use common code). Eaxh time it's possible, the code must be made as generic an reusable as possible, at least in the context of the proposet repository structure
-- `proxycodelib.py`(see below) file as well as implementations of notebooks as selfcontained regular python files for execution out of interactive python environment are to notable exceptions to the above rule.   
+- Python code (.py) files specific to a given experiment should be avoided in this experiment directory (as the repository normally contains only related experiments, which are in fact various scenarii around a same domain, they should generally use common code). Each time it's possible, the code must be made as generic an reusable as possible, at least in the context of the proposed repository structure
+- `kilroy_was_here.py`(see below) file as well as implementations of notebooks as selfcontained regular python files for execution out of interactive python environment are to notable exceptions to the above rule.   
   
 --- 
 ## How to replicate an experiment
 
 To replicate an experiment, you should:
 
-- **Build the input dataset from a reference dataset** : As datasets may be quite large, they are not saved in this repository, and must be build using the following steps: 
+- **Build the input dataset from a reference dataset** : As datasets may be quite large, they are not saved in this repository, and must be built by following steps below: 
   - Get the reference dataset: Reference datasets must be retrieved from the internet. Links to these datasets are provided at the bottom of this file, as well as in the **datasets** README. Download them and save them in a directory somewhere on your computer.
   - Build the experiment dataset: 
     - Experiments datasets are subsets or mixtures of the reference datasets.
     - Their content is detailled in the corresponding manifest in the `datasets` directory.
-    - They can be either built on the fly when running an experiment for the first time, or upfront using the generic notebook present in the `datasets` directory
+    - They can be either built on the fly when running an experiment for the first time, or upfront using the generic notebooks present in the `datasets` directory
     - Check the experiment dataset: Compute a MD5 hash over the directory you just created. This hash should be identical to the one provided in the experiment dataset detailed description. If not, check that the files list is correct. 
     - From this point, you have reasonably insured that you have the same initial conditions than the original experiment (and so, you can expect to obtain the same results;-) )
   
   
 ## How to add or extend an experiment  
 
-In addition to the various functions available within the codelib directory modules, two specific mechanisms are provided to enable the proposed repository structure:
+In addition to the various functions available within the audace directory modules, two specific mechanisms are provided to enable the proposed repository structure:
 
-- **proxycodelib** : proxicodelib is a module that should be imported in any notebook willing to make use of a function from the codelib directory. It make the codelib modules accessible from anywhere in the repository.
-- **mooltipath**: *mooltipath(\*args)* is a function part of the codelib `jupytools` module.
-  - When imported, it walks from the current directory up to the first directory containing a `.here` file and build an absolute path joining this root directory path with the list of paths passed in \*args (This operation is performed once).
+- **kilroy_was_here** : kilroy_was_here is a module that should be imported in any notebook willing to make use of a function from the audace directory. It make the audace modules accessible from anywhere in the repository.
+- **mooltipath**: *mooltipath(\*args)* is a function part of the audace `jupytools` module.
+  - When imported, it walks from the current directory up to the first directory containing a `.kilroy` file and build an absolute path joining this root directory path with the list of paths passed in \*args (This operation is performed once).
   - As such, it allows to use stable paths relative this root directory, independant from the notebook location.
   - It is operating system agnostic and takes care of any needed path normalization (/ vs \\). So you can always use '/' as a separator when defining path strings.
 
-**Example:** Let's say this repository resides locally on your computer in *C:\Users\me\ShowBees*, and that you have a notebook ANYWHERE in the repository tree. Then the following notebook code will ALWAYS gives the same results (meaning that you can move around your notebook without changing its behaviour).
+**Example:** Let's say this repository resides locally on your Windows computer in *C:\Users\me\ShowBees*, and that you have a notebook ANYWHERE in the repository tree. Then the following notebook code will ALWAYS gives the same results (meaning that you can move around your notebook without changing its behaviour).
 
 ```python
-import proxycodelib
-from jupytools import mooltipath
+import kilroy_was_here
+from audace.jupytools import mooltipath
 
 # Without arguments
 # will print the repository root directory C:/Users/me/ShowBees
@@ -244,8 +235,8 @@ print(mooltipath('a/b','c\\d/e', 'f/foo.bar')) # will print C:\Users\me\ShowBees
 
 
 ---
-## Credits & Notes
-- Most of this repository code is a reuse of the (either untouched, slightly modified or heavily refactored) code from:
+## References, Credits & Notes
+- Part of this repository code is a reuse of (or is inspired from) the (either untouched, slightly modified, heavily refactored or totally rewritten) code from:
   - **Nolasco, Ines** : https://www.researchgate.net/profile/Ines_Nolasco
   - **Khellouf, Leila** : https://fr.linkedin.com/in/leila-khellouf-174704197
   - **Fourer, Dominique** : https://www.researchgate.net/profile/Dominique_Fourer , https://fourer.fr/

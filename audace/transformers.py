@@ -9,6 +9,15 @@ class Identity:
         return value
 
 
+class Decode:
+    def __init__(self, dict):
+        self._dict = dict
+        return
+
+    def __call__(self, key):
+        return self._dict[key]
+
+
 class StringMatcher:
     def __init__(self, regex):
         self._compiled_regex = re.compile(regex)

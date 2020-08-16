@@ -10,6 +10,7 @@ import sqlite3
 import multiprocessing
 from functools import partial
 from contextlib import closing
+import csv
 
 # ===== 3rd party imports
 import pandas as pd
@@ -37,14 +38,6 @@ warnings.filterwarnings('ignore')
 # ===== Main Class
 class AudioDataset:
     def __init__(self, dataset_name, source_path_str=None, nprocs=1):
-        """Create an AudioDataset instance by parsing its manifest file
-
-        Args:
-            dataset_name (str): The name of the dataset
-            source_path (Path): Path where to find the audio source files
-
-        """
-
         self.ds_name = dataset_name
 
         # wherever you call from, the dataset root path
@@ -57,7 +50,7 @@ class AudioDataset:
         self.path = Path(base_path, dataset_name)
 
         # database file path
-        self.db_path = Path(self.path, "database.db")
+        self.db_path = Path(self.path, dataset_name + ".db")
 
         # manifest file path
         mnf_path = Path(base_path, dataset_name + ".mnf")
@@ -383,7 +376,7 @@ class AudioDataset:
 
     def addAttribute(self, name):
         with self._cnx() as db:
-            return dblib.add_thing(db, "attribute", name, "TEXT")
+            return dblib.add_thing(db, "attribute", name, "")
 
     def getAttribute(self, name):
         with self._cnx() as db:
@@ -432,3 +425,41 @@ class AudioDataset:
 
     def getDataFrame(self):
         return self.dumpDataFrame.drop(columns=['XXX'])
+
+    def exportTSV(self, sql, output_dir, label_names, feature_names):
+        output_path = Path(output_dir)
+        if not output_path.exists():
+            output_path.mkdir(parents=True)
+
+        df = self.queryDataFrame(sql)
+        df_labels = df[label_names]
+        df_features = df[feature_names]
+
+        if isinstance(label_names, list):
+            str_labels = '_'.join(label_names)
+        else:
+            str_labels = label_names
+
+        labels_ouput_path = Path(
+            output_path, self.ds_name + '_labels_' + str_labels + '.tsv')
+
+        df_labels.to_csv(
+            labels_ouput_path,
+            sep='\t',
+            index=False,
+            header=(isinstance(label_names, list) and len(label_names) > 1)
+        )
+
+        if isinstance(feature_names, list):
+            str_features = '_'.join(feature_names)
+        else:
+            str_features = feature_names
+
+        features_output_path = Path(
+            output_path, self.ds_name + '_features_' + str_features + '.tsv')
+
+        # TODO: Manage list of features
+        with open(features_output_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile, delimiter='\t')
+            for f in df_features:
+                writer.writerow(f)
