@@ -14,7 +14,7 @@ def mooltipath(*args):
     return rootpath.joinpath(*args)
 
 
-def predestination(seed_value):
+def predestination(seed_value=23081965):
     # 1. Set the `PYTHONHASHSEED` environment variable at a fixed value
     os.environ['PYTHONHASHSEED'] = str(seed_value)
 

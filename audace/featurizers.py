@@ -8,12 +8,11 @@ class MFCC:
 
     def __call__(self, sig, sr):
         melspec = librosa.feature.melspectrogram(sig, sr)
-        nda = librosa.feature.mfcc(
+        return librosa.feature.mfcc(
             S=librosa.power_to_db(melspec),
             sr=sr,
-            n_mfcc=self._n_mfcc)
-
-        return (nda.flatten().tolist())
+            n_mfcc=self._n_mfcc
+        )
 
 
 class Welch:

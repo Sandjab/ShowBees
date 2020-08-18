@@ -462,4 +462,4 @@ class AudioDataset:
         with open(features_output_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter='\t')
             for f in df_features:
-                writer.writerow(f)
+                writer.writerow(f.flatten().tolist())
