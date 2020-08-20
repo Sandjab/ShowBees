@@ -1,4 +1,5 @@
 import re
+from sklearn import preprocessing
 
 
 class Identity:
@@ -7,6 +8,14 @@ class Identity:
 
     def __call__(self, value):
         return value
+
+
+class Standardize:
+    def __init__(self):
+        return
+
+    def __call__(self, a, *args, **kwargs):
+        return preprocessing.scale(a)
 
 
 class Decode:

@@ -154,14 +154,19 @@ class FromAnnotation:
 
 
 class FromSample:
-    def __init__(self, samples_path, F):
+    def __init__(self, samples_path, Fs):
         self._samples_path = samples_path
-        self._F = F
+        self._Fs = Fs
 
     def __call__(self, db, feature_name):
         c = db.cursor()
         c.execute("SELECT rowid, name from samples")
         file_rows = c.fetchall()
+
+        if isinstance(self._Fs, list):
+            Fs = self._Fs
+        else:
+            Fs = (self._Fs,)
 
         results = []
         for id, name in tqdm(file_rows,
@@ -169,6 +174,14 @@ class FromSample:
                              mininterval=0.5):
             sample_path = str(Path(self._samples_path, name + ".wav"))
             sig, sr = librosa.core.load(sample_path)
-            results.append((id, self._F(sig, sr)))
+
+            for i, F in enumerate(Fs):
+                if (i == 0):
+                    res = F(sig, sr)
+                else:
+                    res1 = res
+                    res = F(res1, sr)
+
+            results.append((id, res))
         c.close()
         return results
