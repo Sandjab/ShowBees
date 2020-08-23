@@ -1,8 +1,25 @@
 import matplotlib.pyplot as plt
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import roc_curve
+from sklearn.metrics import confusion_matrix
 import numpy as np
 import itertools
 from pathlib import Path
 import math
+
+
+def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
+    dir_path = Path('./figures')
+
+    if not dir_path.exists():
+        dir_path.mkdir(parents=True)
+
+    path = Path(dir_path, fig_id + "." + fig_extension)
+
+    if tight_layout:
+        plt.tight_layout()
+
+    plt.savefig(path, format=fig_extension, dpi=resolution)
 
 
 def _brightness(colormap, value):
@@ -98,6 +115,9 @@ def plot_confusion_matrix(cm,
     if cmap is None:
         cmap = plt.get_cmap('Blues')
 
+    if normalize:
+        cm = 100.0*cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+
     plt.imshow(cm, interpolation='nearest', cmap=cmap)
     plt.title(title)
     plt.colorbar()
@@ -107,13 +127,11 @@ def plot_confusion_matrix(cm,
         plt.xticks(tick_marks, target_names, rotation=45)
         plt.yticks(tick_marks, target_names)
 
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-
+    thresh = cm.max() / 1.5 if normalize else cm.max() / 2
     for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        text_color = "black" if _brightness(cmap, cm[i, j]) > 0.7 else "white"
+        text_color = "white" if cm[i, j] > thresh else "black"
         if normalize:
-            plt.text(j, i, "{:0.4f}".format(cm[i, j]),
+            plt.text(j, i, "{:0.2f}%".format(cm[i, j]),
                      horizontalalignment="center",
                      color=text_color)
         else:
@@ -128,24 +146,93 @@ def plot_confusion_matrix(cm,
     # plt.show()
 
 
-def plot_roc_curve(fpr, tpr, label=None):
+def plot_roc_curve(clf, X, y, label=None):
+    margin = 0.01
+    y_scores = clf.decision_function(X)
+    fpr, tpr, thresholds = roc_curve(y, y_scores)
     plt.plot(fpr, tpr, linewidth=2, label=label)
     plt.plot([0, 1], [0, 1], 'k--')  # dashed diagonal
-    plt.axis([0, 1, 0, 1])
-    plt.xlabel('False Positive Rate (Fall-Out)', fontsize=16)
-    plt.ylabel('True Positive Rate (Recall)', fontsize=16)
+    plt.axis([0-margin, 1+margin, 0-margin, 1+margin])
+    plt.xlabel('False Positive Rate (Fall-Out)', fontsize=14)
+    plt.ylabel('True Positive Rate (Recall)', fontsize=14)
     plt.grid(True)
 
 
-def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
-    dir_path = Path('./figures')
+def plot_precision_recall_vs_threshold(clf, X, y):
+    vmargin = 0.01
+    y_scores = clf.decision_function(X)
 
-    if not dir_path.exists():
-        dir_path.mkdir(parents=True)
+    precisions, recalls, thresholds = precision_recall_curve(y, y_scores)
 
-    path = Path(dir_path, fig_id + "." + fig_extension)
+    plt.plot(thresholds,
+             precisions[:-1],
+             "r--",
+             label="Precision",
+             linewidth=2
+             )
 
-    if tight_layout:
-        plt.tight_layout()
+    plt.plot(thresholds,
+             recalls[:-1],
+             "g--",
+             label="Recall",
+             linewidth=2
+             )
 
-    plt.savefig(path, format=fig_extension, dpi=resolution)
+    plt.legend(loc="center right", fontsize=14)
+    plt.xlabel("Threshold", fontsize=14)
+    plt.grid(True)
+    plt.axis([thresholds.min(), thresholds.max(), -vmargin, 1+vmargin])
+
+
+def plot_precision_vs_recall(clf, X, y):
+    margin = 0.01
+
+    y_scores = clf.decision_function(X)
+    precisions, recalls, thresholds = precision_recall_curve(y, y_scores)
+
+    plt.plot(recalls, precisions, "b-", linewidth=2)
+    plt.xlabel("Recall", fontsize=14)
+    plt.ylabel("Precision", fontsize=14)
+    plt.axis([0-margin, 1+margin, 0-margin, 1+margin])
+    plt.grid(True)
+
+
+def clf_full_report(clf, X, y, target_names, save_as=None):
+    y_pred = clf.predict(X)
+    # Compute confusion matrix
+    cnf_matrix = confusion_matrix(y, y_pred)
+
+    plt.figure(figsize=(12, 15))
+
+    plt.subplot(321)
+    # Plot non-normalized confusion matrix
+    plot_confusion_matrix(cnf_matrix,
+                          target_names=target_names,
+                          normalize=False,
+                          title='Confusion matrix, without normalization')
+
+    plt.subplot(322)
+    # Plot normalized confusion matrix
+    plot_confusion_matrix(cnf_matrix,
+                          target_names=target_names,
+                          normalize=True,
+                          title='Normalized confusion matrix')
+
+    plt.subplot(323)
+    # Plot Precision vs Recall
+    plot_precision_vs_recall(clf, X, y)
+
+    plt.subplot(324)
+    # Plot Receiver Operating Characteristic
+    plot_roc_curve(clf, X, y)
+
+    plt.subplot(313)
+    # Plot precision and recall vs threshold over 2 columns
+    plot_precision_recall_vs_threshold(clf, X, y)
+
+    plt.tight_layout()
+
+    if save_as:
+        save_fig(save_as)
+
+    plt.show()

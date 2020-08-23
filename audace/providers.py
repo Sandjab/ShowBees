@@ -185,3 +185,26 @@ class FromSample:
             results.append((id, res))
         c.close()
         return results
+
+
+class FromSample2:
+    def __init__(self, samples_path, F):
+        self._samples_path = samples_path
+        self._F = F
+
+    def __call__(self, db, feature_name):
+        c = db.cursor()
+        c.execute("SELECT rowid, name from samples")
+        file_rows = c.fetchall()
+
+        results = []
+        for id, name in tqdm(file_rows,
+                             desc="Computing " + feature_name,
+                             mininterval=0.5):
+            sample_path = str(Path(self._samples_path, name + ".wav"))
+            sig, sr = librosa.core.load(sample_path)
+
+            results.append((id, self._F(sig, sr)))
+
+        c.close()
+        return results
