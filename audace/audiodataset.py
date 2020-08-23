@@ -412,7 +412,7 @@ class AudioDataset:
 
     def listFeatures(self):
         with self._cnx() as db:
-            return dblib.search_dictionary_for_type(db, "label")
+            return dblib.search_dictionary_for_type(db, "feature")
 
     def queryDataFrame(self, sql):
         with self._cnx() as db:
