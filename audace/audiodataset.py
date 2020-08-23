@@ -8,11 +8,12 @@ import os
 from pathlib import Path
 import sqlite3
 import multiprocessing
-from functools import partial
+from functools import partial, reduce
 from contextlib import closing
 import csv
 
 # ===== 3rd party imports
+import numpy as np
 import pandas as pd
 from checksumdir import dirhash
 import librosa
@@ -23,10 +24,25 @@ import soundfile
 from audace.jupytools import mooltipath, iprint
 from audace import dblib
 
-# from .features import extract_feature_from_sample, welch, mfcc
-
 # Disable warnings
 warnings.filterwarnings('ignore')
+
+####################
+# Public functions #
+####################
+
+
+# Utility function to reshape features of any shape from a pandas Serie
+# into a nd array with shape (n_samples, product(feature dimensions))
+def feature_serie_to_np(s):
+    x = np.stack(s)
+    shape = x.shape
+    return x.reshape(shape[0], reduce((lambda x, y: x * y), shape[1:]))
+
+
+##############
+# Main Class #
+##############
 
 # Note: "Public" instance or class methods consistently follow lower camelCase
 #        naming convention, which does not comply with PEP 8.
@@ -34,8 +50,6 @@ warnings.filterwarnings('ignore')
 #        This is my personnal preference.
 #        Deal with it.
 
-
-# ===== Main Class
 class AudioDataset:
     def __init__(self, dataset_name, source_path_str=None, nprocs=1):
         self.ds_name = dataset_name
@@ -366,6 +380,10 @@ class AudioDataset:
         with self._cnx() as db:
             return dblib.get_thing(db, "label", name)
 
+    def listLabelsValues(self, name):
+        with self._cnx() as db:
+            return dblib.list_thing_values(db, "label", name)
+
     def dropLabel(self, name):
         with self._cnx() as db:
             return dblib.del_thing(db, "label", name)
@@ -381,6 +399,10 @@ class AudioDataset:
     def getAttribute(self, name):
         with self._cnx() as db:
             return dblib.get_thing(db, "attribute", name)
+
+    def listAttributeValues(self, name):
+        with self._cnx() as db:
+            return dblib.list_thing_values(db, "attribute", name)
 
     def setAttribute(self, name, attributor):
         with self._cnx() as db:

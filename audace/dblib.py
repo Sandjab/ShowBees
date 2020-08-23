@@ -221,3 +221,20 @@ def get_thing(db, thing_type, thing_name):
         results.append(row[0])
     c.close()
     return results
+
+
+def list_thing_values(db, thing_type, thing_name):
+    assert_valid_name(thing_name)
+    t = get_type_by_name(db, thing_name)
+    assert t is None or t == thing_type, \
+        F"""No {thing_type} named '{thing_name}', but {t} exists with this name.
+        Did you intent to call get{t.capitalize()}() ?"""
+
+    c = db.cursor()
+    c.execute(F"SELECT distinct \"{thing_name}\" from samples")
+    rows = c.fetchall()
+    results = []
+    for row in rows:
+        results.append(row[0])
+    c.close()
+    return results
