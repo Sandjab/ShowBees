@@ -64,6 +64,9 @@ which requires you have nodejs installed. If not:
 `conda install -c conda-forge nodejs`
 
 
+### graphviz &  pydot
+
+
 ## System Information
 
 Experimental results documented in this repository were produced using the configuration below:
@@ -91,7 +94,7 @@ interpreter: 64bit
 ```
 
 ---
-## Recommended Repository structure
+## Repository structure
 
 ```
 ROOT
@@ -117,7 +120,7 @@ ROOT
 ├───experiments
 │   ├───EXP001
 │   │   ├───README.md
-│   │   ├───kilroy_was_here.py
+│   │   ├───proxycodelib.py
 │   │   ├───*.ipynb
 │   │   └───...
 │   │
@@ -125,13 +128,13 @@ ROOT
 │   │
 │   └───EXPxxx
 │       ├───README.md
-│       ├───kilroy_was_here.py
+│       ├───proxycodelib.py
 │       ├───*.ipynb
 │       └───...
 │
 ├───tutorials
 │   ├───README.md
-│   ├───kilroy_was_here.py
+│   ├───proxycodelib.py
 │   ├───01-Basics.ipynb
 │   ├───02-Datasets/ipynb
 │   └─── ...
@@ -153,7 +156,7 @@ And directories:
   - one subdirectory EXPxyz_*<EXPERIMENT_NAME_IN_SNAKE_CASE>* for each experiment
   - a README.md file with the list of experiments (experiment name and short description), as well as an introduction to the experiments common process, if needed.
 
-- each **experiments/EXPxyz_*<EXPERIMENT_NAME_IN_SNAKE_CASE>*** directory contains:
+- each **experiments/EXPxyz*** directory contains:
   - a README.md file with a detailed description of the experiment
   - the notebook(s) used to conduct the experiment,
   - optionnaly, output files produced during the notebook(s) execution. If needed, adhoc subdirectories may be used for organizational purposes.
@@ -166,8 +169,11 @@ And directories:
   
 - a **datasets** directory containing:
   - one manifest (.mnf) file per dataset, defining the dataset (chunck duration , chunk overlap, resampling frequency, list of source audio files) as well as md5 checksums for validation   
-  - one 'samples' subdirectory per dataset where experiment datasets audio chunks will be built from external reference datasets. 
+  - one subdirectory per dataset where experiment datasets will be built from external reference datasets. Each of these directories contains:
+    - one **labs** subdirectory, with the .lab files for this dataset
+	- one **chunks** subdirectory with all the audi chunks (.wav) for this dataset
 
+	
 *Note: Within the `datasets` directory, all subdirectories does not exist in git. They will be created dynamically.
   
 --- 
@@ -175,31 +181,31 @@ And directories:
 
 This repository has been built having in mind theses guidelines:
 
-- A python code (.py) file must never be duplicated across experiments. The audace directory specifically exists for the specific purpose of allowing common code sharing between experiments.
-- Duplication of IPython code  between notebooks is obviously allowed, but must be limited to:
-  - parameters setting, orchestration of macro functions calls and results visualisation (notebooks' code should be as much as possible sequential without any complex logic)
+- A python code (.py) file must never be duplicated across experiments. The **audace** and **userlib** directories specifically exist for the specific purpose of allowing common code sharing between experiments.
+- Duplication of IPython code between notebooks is obviously allowed, but must be limited to:
+  - parameters setting, orchestration of macro functions calls and results visualisation (notebooks' code should be sequential without any complex logic)
   - exploratory snippets not meant for experiment replication (non trustable). They should ideally reside in a `snippets` subdirectory
-- Python code (.py) files specific to a given experiment should be avoided in this experiment directory (as the repository normally contains only related experiments, which are in fact various scenarii around a same domain, they should generally use common code). Each time it's possible, the code must be made as generic an reusable as possible, at least in the context of the proposed repository structure
-- `kilroy_was_here.py`(see below) file as well as implementations of notebooks as selfcontained regular python files for execution out of interactive python environment are to notable exceptions to the above rule.   
+- Python code (.py) files specific to a given experiment should be avoided in this experiment directory (as the repository normally contains only related experiments, which are in fact various scenarii around a same domain, they should generally use common code). Eaxh time it's possible, the code must be made as generic an reusable as possible, at least in the context of the proposet repository structure
+- `proxycodelib.py`(see below) file as well as implementations of notebooks as selfcontained regular python files for execution out of interactive python environment are to notable exceptions to the above rule.   
   
 --- 
 ## How to replicate an experiment
 
 To replicate an experiment, you should:
 
-- **Build the input dataset from a reference dataset** : As datasets may be quite large, they are not saved in this repository, and must be built by following steps below: 
+- **Build the input dataset from a reference dataset** : As datasets may be quite large, they are not saved in this repository, and must be build using the following steps: 
   - Get the reference dataset: Reference datasets must be retrieved from the internet. Links to these datasets are provided at the bottom of this file, as well as in the **datasets** README. Download them and save them in a directory somewhere on your computer.
   - Build the experiment dataset: 
     - Experiments datasets are subsets or mixtures of the reference datasets.
     - Their content is detailled in the corresponding manifest in the `datasets` directory.
-    - They can be either built on the fly when running an experiment for the first time, or upfront using the generic notebooks present in the `datasets` directory
+    - They can be either built on the fly when running an experiment for the first time, or upfront using the generic notebook present in the `datasets` directory
     - Check the experiment dataset: Compute a MD5 hash over the directory you just created. This hash should be identical to the one provided in the experiment dataset detailed description. If not, check that the files list is correct. 
     - From this point, you have reasonably insured that you have the same initial conditions than the original experiment (and so, you can expect to obtain the same results;-) )
   
   
 ## How to add or extend an experiment  
 
-In addition to the various functions available within the audace directory modules, two specific mechanisms are provided to enable the proposed repository structure:
+In addition to the various functions available within the codelib directory modules, two specific mechanisms are provided to enable the proposed repository structure:
 
 - **kilroy_was_here** : kilroy_was_here is a module that should be imported in any notebook willing to make use of a function from the audace directory. It make the audace modules accessible from anywhere in the repository.
 - **mooltipath**: *mooltipath(\*args)* is a function part of the audace `jupytools` module.
@@ -207,36 +213,11 @@ In addition to the various functions available within the audace directory modul
   - As such, it allows to use stable paths relative this root directory, independant from the notebook location.
   - It is operating system agnostic and takes care of any needed path normalization (/ vs \\). So you can always use '/' as a separator when defining path strings.
 
-**Example:** Let's say this repository resides locally on your Windows computer in *C:\Users\me\ShowBees*, and that you have a notebook ANYWHERE in the repository tree. Then the following notebook code will ALWAYS gives the same results (meaning that you can move around your notebook without changing its behaviour).
-
-```python
-import kilroy_was_here
-from audace.jupytools import mooltipath
-
-# Without arguments
-# will print the repository root directory C:/Users/me/ShowBees
-print(mooltipath())
-
-# if any argument has a leading slash, will build an absolute path
-# directlyusing the last argument with leading slash
-#
-print(mooltipath('/a')) # will print C:\a
-print(mooltipath('/a', '/b', '/c')) # will print C:\c
-print(mooltipath('/a', '/b', 'c', '/d')) # will print C:\d
-
-# if there is no argument with a leading slash (ony relative paths)
-# will build an absolute path by joining these relative paths,
-# using the repository root directory as a starting point
-# (This is the most useful case, for instance to address a dataset from a notebook)
-#
-print(mooltipath('a')) # will print C:/Users/me/ShowBees/a
-print(mooltipath('a/b','c\\d/e', 'f/foo.bar')) # will print C:\Users\me\ShowBees\a\b\c\d\e\f\foo.bar
-```
-
+Examples are provided in the tutorials directory.
 
 ---
-## References, Credits & Notes
-- Part of this repository code is a reuse of (or is inspired from) the (either untouched, slightly modified, heavily refactored or totally rewritten) code from:
+## Credits & Notes
+- Part of this repository code is a reuse of the (either untouched, slightly modified or heavily refactored) code from:
   - **Nolasco, Ines** : https://www.researchgate.net/profile/Ines_Nolasco
   - **Khellouf, Leila** : https://fr.linkedin.com/in/leila-khellouf-174704197
   - **Fourer, Dominique** : https://www.researchgate.net/profile/Dominique_Fourer , https://fourer.fr/
