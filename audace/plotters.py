@@ -1,106 +1,33 @@
 import matplotlib.pyplot as plt
-from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import roc_curve
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import (
+    precision_recall_curve,
+    roc_curve,
+    confusion_matrix
+)
+
 import numpy as np
 import itertools
 from pathlib import Path
 import math
 
 
-def save_fig(fig_id, tight_layout=True, fig_extension="png", resolution=300):
-    dir_path = Path('./figures')
+def save_fig(exp_name, fig_id, tight_layout=True, ext="png", res=300):
+    dir_path = Path(exp_name, 'figures')
 
     if not dir_path.exists():
         dir_path.mkdir(parents=True)
 
-    path = Path(dir_path, fig_id + "." + fig_extension)
+    path = Path(dir_path, fig_id + "." + ext)
 
     if tight_layout:
         plt.tight_layout()
 
-    plt.savefig(path, format=fig_extension, dpi=resolution)
+    plt.savefig(path, format=ext, dpi=res)
 
 
 def _brightness(colormap, value):
     r, g, b, t = colormap(value)
     return math.sqrt(.241*r*r + .691*g*g + .068*b*b)
-
-
-def plot_confusion_matrix2(cm,
-                           target_names,
-                           title='Confusion matrix',
-                           cmap=None,
-                           normalize=True):
-    """
-    given a sklearn confusion matrix (cm), make a nice plot
-
-    Arguments
-    ---------
-    cm:           confusion matrix from sklearn.metrics.confusion_matrix
-
-    target_names: given classification classes such as [0, 1, 2]
-                  the class names, for example: ['high', 'medium', 'low']
-
-    title:        the text to display at the top of the matrix
-
-    cmap:         the gradient of the values displayed
-                  from matplotlib.pyplot.cm
-                  plt.get_cmap('jet') or plt.cm.Blues
-
-    normalize:    If False, plot the raw numbers
-                  If True, plot the proportions
-
-    Usage
-    -----
-    plot_confusion_matrix(cm           = cm,
-                          normalize    = True,
-                          target_names = y_labels_vals,
-                          title        = best_estimator_name)
-
-    Reference
-    ---------
-    http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html
-
-    http://matplotlib.org/examples/color/colormaps_reference.html
-
-    """
-
-    accuracy = np.trace(cm) / float(np.sum(cm))
-    misclass = 1 - accuracy
-
-    if cmap is None:
-        cmap = plt.get_cmap('Blues')
-
-    # plt.figure(figsize=(8, 6))
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-
-    if target_names is not None:
-        tick_marks = np.arange(len(target_names))
-        plt.xticks(tick_marks, target_names, rotation=45)
-        plt.yticks(tick_marks, target_names)
-
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-
-    thresh = cm.max() / 1.5 if normalize else cm.max() / 2
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        if normalize:
-            plt.text(j, i, "{:0.4f}".format(cm[i, j]),
-                     horizontalalignment="center",
-                     color="white" if cm[i, j] > thresh else "black")
-        else:
-            plt.text(j, i, "{:,}".format(cm[i, j]),
-                     horizontalalignment="center",
-                     color="white" if cm[i, j] > thresh else "black")
-
-    # plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label\naccuracy={:0.4f}; misclass={:0.4f}'.format(
-        accuracy, misclass))
-    # plt.show()
 
 
 def plot_confusion_matrix(cm,
@@ -184,6 +111,25 @@ def plot_precision_recall_vs_threshold(clf, X, y):
     plt.axis([thresholds.min(), thresholds.max(), -vmargin, 1+vmargin])
 
 
+def plot_x_vs_y(x_title, x, y_title, y):
+    plt.title(x_title + " vs " + y_title)
+    plt.plot(x, x, "k--", linewidth=0.8)
+    plt.plot(x, y, "r", linewidth=2)
+    plt.xlabel(x_title, fontsize=14)
+    plt.ylabel(y_title, fontsize=14)
+    plt.grid(True)
+
+
+def plot_metric_vs_metric(h, x_metric, y_metric):
+    x = h.history[x_metric]
+    y = h.history[y_metric]
+    plt.title("model " + x_metric + " vs " + y_metric)
+    plt.plot(x, y, "r", linewidth=2)
+    plt.xlabel(x_metric, fontsize=14)
+    plt.ylabel(y_metric, fontsize=14)
+    plt.grid(True)
+
+
 def plot_precision_vs_recall(clf, X, y):
     margin = 0.01
 
@@ -197,7 +143,7 @@ def plot_precision_vs_recall(clf, X, y):
     plt.grid(True)
 
 
-def clf_full_report(clf, X, y, target_names, save_as=None):
+def clf_full_report(clf, X, y, target_names, exp_name=None, save_as=None):
     y_pred = clf.predict(X)
     # Compute confusion matrix
     cnf_matrix = confusion_matrix(y, y_pred)
@@ -233,6 +179,108 @@ def clf_full_report(clf, X, y, target_names, save_as=None):
     plt.tight_layout()
 
     if save_as:
-        save_fig(save_as)
+        save_fig(exp_name, save_as)
+
+    plt.show()
+
+
+def nn_full_report(m, param_X, param_y, target_names, exp_name=None, save_as=None):
+    y_pred = m.predict(param_X).round()
+    # Compute confusion matrix
+    if param_y.shape[1] > 1:
+        y = param_y.argmax(axis=1)
+        y_pred = y_pred.argmax(axis=1)
+    else:
+        y = param_y
+
+    cnf_matrix = confusion_matrix(y, y_pred)
+
+    plt.figure(figsize=(12, 5))
+
+    plt.subplot(121)
+    # Plot non-normalized confusion matrix
+    plot_confusion_matrix(cnf_matrix,
+                          target_names=target_names,
+                          normalize=False,
+                          title='Confusion matrix, without normalization')
+
+    plt.subplot(122)
+    # Plot normalized confusion matrix
+    plot_confusion_matrix(cnf_matrix,
+                          target_names=target_names,
+                          normalize=True,
+                          title='Normalized confusion matrix')
+
+    plt.tight_layout()
+
+    if save_as:
+        save_fig(exp_name, save_as)
+
+    plt.show()
+
+
+def plot_accuracy_curve(h):
+    plt.plot(h.history['accuracy'])
+    plt.plot(h.history['val_accuracy'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.grid()
+    plt.legend(['train', 'val'], loc='lower right')
+
+
+def plot_loss_curve(h):
+    plt.plot(h.history['loss'])
+    plt.plot(h.history['val_loss'])
+    plt.title('model loss')
+    plt.ylabel('loss')
+    plt.xlabel('epoch')
+    plt.grid()
+    plt.legend(['train', 'val'], loc='upper right')
+
+
+def plot_accuracy_loss_curve(h):
+    plt.plot(h.history['accuracy'])
+    plt.plot(h.history['loss'])
+    plt.plot(h.history['val_accuracy'])
+    plt.plot(h.history['val_loss'])
+    plt.xlabel('epoch')
+    plt.grid()
+    plt.legend(['accuracy', 'loss', 'val_acc', 'val_loss'], loc='center right')
+    plt.gca().set_ylim(0, 1)
+    plt.tight_layout()
+
+
+def plot_nn_metrics(h):
+    plt.title('model metrics')
+    keys = h.history.keys()
+    for key in keys:
+        plt.plot(h.history[key])
+
+    plt.ylabel('metric')
+    plt.xlabel('epoch')
+    plt.grid()
+    plt.legend(keys, loc='center right')
+
+
+def plot_nn_learning_curves(history, exp_name=None, save_as=None):
+    plt.figure(figsize=(14, 8))
+
+    plt.subplot(221)
+    plot_accuracy_curve(history)
+
+    plt.subplot(222)
+    plot_loss_curve(history)
+
+    plt.subplot(223)
+    plot_metric_vs_metric(history, 'accuracy', 'loss')
+
+    plt.subplot(224)
+    plot_metric_vs_metric(history, 'val_accuracy', 'val_loss')
+
+    plt.tight_layout()
+
+    if save_as:
+        save_fig(exp_name, save_as)
 
     plt.show()

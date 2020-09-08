@@ -238,3 +238,20 @@ def list_thing_values(db, thing_type, thing_name):
         results.append(row[0])
     c.close()
     return results
+
+
+def list_column_values(db, col_name, cond=None):
+    sql = F"SELECT distinct \"{col_name}\" from samples"
+    if cond:
+        sql += " WHERE " + cond
+
+    c = db.cursor()
+    c.execute(sql)
+    rows = c.fetchall()
+
+    results = []
+    for row in rows:
+        results.append(row[0])
+
+    c.close()
+    return results

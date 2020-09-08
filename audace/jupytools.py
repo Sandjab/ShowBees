@@ -1,11 +1,18 @@
 import os
 import random
+import json
 from datetime import datetime
+import urllib
+from pathlib import Path
 
 import numpy as np
 import psutil
 import tensorflow as tf
 from pyprojroot import here
+
+from notebook import notebookapp
+import ipykernel
+
 
 rootpath = here(project_files=['.kilroy'], warn=False)
 
@@ -37,3 +44,30 @@ def iprint(*args, **kwargs):
     process_uram = psutil.Process().memory_info().rss/1024/1024/1024
     print('[{0}|{1:04.1f}%|{2:04.1f}%|{3:.2f}GB]'.format(
         t, ucpu, uram, process_uram), *args, **kwargs)
+
+
+def say_my_name():
+    """Returns the absolute path of the Notebook or None if it cannot
+    be determined
+    NOTE:
+    Works only when the security is token-based or there is also no password
+    """
+    connection_file = os.path.basename(ipykernel.get_connection_file())
+    kernel_id = connection_file.split('-', 1)[1].split('.')[0]
+
+    for srv in notebookapp.list_running_servers():
+        try:
+            # No token and no password, ahem...
+            if srv['token'] == '' and not srv['password']:
+                req = urllib.request.urlopen(srv['url']+'api/sessions')
+            else:
+                req = urllib.request.urlopen(
+                    srv['url']+'api/sessions?token='+srv['token'])
+            sessions = json.load(req)
+            for sess in sessions:
+                if sess['kernel']['id'] == kernel_id:
+                    return str(Path(sess['notebook']['path']).stem)
+        except:
+            pass  # There may be stale entries in the runtime directory
+
+    return 'default'

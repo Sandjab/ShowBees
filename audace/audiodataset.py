@@ -8,12 +8,11 @@ import os
 from pathlib import Path
 import sqlite3
 import multiprocessing
-from functools import partial, reduce
+from functools import partial
 from contextlib import closing
 import csv
 
 # ===== 3rd party imports
-import numpy as np
 import pandas as pd
 from checksumdir import dirhash
 import librosa
@@ -30,14 +29,6 @@ warnings.filterwarnings('ignore')
 ####################
 # Public functions #
 ####################
-
-
-# Utility function to reshape features of any shape from a pandas Serie
-# into a nd array with shape (n_samples, product(feature dimensions))
-def feature_serie_to_np(s):
-    x = np.stack(s)
-    shape = x.shape
-    return x.reshape(shape[0], reduce((lambda x, y: x * y), shape[1:]))
 
 
 ##############
@@ -166,6 +157,9 @@ class AudioDataset:
         return closing(
             sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES)
         )
+
+    def getNbFiles(self):
+        return len(self.filenames)
 
     def info(self):
         iprint("------------------------------------------------------")
@@ -367,6 +361,22 @@ class AudioDataset:
 
         db.close()
         return
+
+    def countSamples(self, cond=None):
+        with self._cnx() as db:
+            sql = "SELECT COUNT(*) FROM samples"
+            if cond:
+                sql += " WHERE " + cond
+            c = db.cursor()
+            c.execute(sql)
+            row = c.fetchone()
+
+        db.close()
+        return row[0]
+
+    def listColumnValues(self, name, cond=None):
+        with self._cnx() as db:
+            return dblib.list_column_values(db, name, cond)
 
     def addLabel(self, name):
         with self._cnx() as db:
