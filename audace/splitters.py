@@ -117,11 +117,21 @@ def splitTrainValidTestFold(main_df,
                             label_name,
                             fold_name,
                             fold_value,
-                            valid_frac
+                            valid_frac,
+                            balance_strategy=0
                             ):
     df_train_valid = main_df.loc[main_df[fold_name] != fold_value]
     df_test = main_df.loc[main_df[fold_name] == fold_value]
     df_train, df_valid = train_test_split(df_train_valid, test_size=valid_frac)
+
+    if balance_strategy == -1:
+        df_train = balanceDownSampleMajority(df_train, label_name)
+        df_valid = balanceDownSampleMajority(df_valid, label_name)
+        df_test = balanceDownSampleMajority(df_test, label_name)
+    elif balance_strategy == 1:
+        df_train = balanceUpSampleMinority(df_train, label_name)
+        df_valid = balanceUpSampleMinority(df_valid, label_name)
+        df_test = balanceUpSampleMinority(df_test, label_name)
 
     return (serie_to_2D(df_train[feature_name]),
             serie_to_2D(df_valid[feature_name]),
