@@ -12,7 +12,7 @@ import math
 
 
 def save_fig(exp_name, fig_id, tight_layout=True, ext="png", res=300):
-    dir_path = Path(exp_name, 'figures')
+    dir_path = Path('results', exp_name, 'figures')
 
     if not dir_path.exists():
         dir_path.mkdir(parents=True)
@@ -184,14 +184,14 @@ def clf_full_report(clf, X, y, target_names, exp_name=None, save_as=None):
     plt.show()
 
 
-def nn_full_report(m, param_X, param_y, target_names, exp_name=None, save_as=None):
-    y_pred = m.predict(param_X).round()
+def nn_full_report(m, p_X, p_y, target_names, exp_name=None, save_as=None):
+    y_pred = m.predict(p_X).round()
     # Compute confusion matrix
-    if param_y.shape[1] > 1:
-        y = param_y.argmax(axis=1)
+    if p_y.shape[1] > 1:
+        y = p_y.argmax(axis=1)
         y_pred = y_pred.argmax(axis=1)
     else:
-        y = param_y
+        y = p_y
 
     cnf_matrix = confusion_matrix(y, y_pred)
 

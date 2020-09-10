@@ -36,48 +36,6 @@ class STFT:
                       )
 
 
-"""
-
-BIG TODO
-
-class STATS:
-    def __init__(self):
-        return
-
-    def __call__(self, s, sr):
-        x_diff = np.diff(spectrogram, 1, 0)
-        X_4features = np.concatenate(
-            (
-                np.mean(spectrogram, 1),
-                np.std(spectrogram, 1),
-                np.mean(x_diff, 1),
-                np.std(x_diff, 1)
-            ),
-            axis=0
-        )
-        X_flat = np.asarray(X_4features)
-        return X_flat
-
-
-def compute_statistics_overMFCCs(MFCC, first='yes'):
-
-    x_delta = librosa.feature.delta(MFCC)
-    x_delta2 = librosa.feature.delta(MFCC, order=2)
-
-    if first == 'no':
-        MFCC = MFCC[1:]
-        x_delta = x_delta[1:]
-        x_delta2 = x_delta2[1:]
-
-    X_4features = np.concatenate((np.mean(MFCC, 1), np.std(MFCC, 1), np.mean(
-        x_delta, 1), np.std(x_delta, 1), np.mean(x_delta2, 1), np.std(x_delta2, 1)), axis=0)
-
-    X_flat = np.asarray(X_4features)
-
-    return X_flat
-"""
-
-
 class Welch:
     def __init__(self, nperseg):
         self._nperseg = nperseg
