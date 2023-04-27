@@ -8,13 +8,13 @@ from pathlib import Path
 import numpy as np
 import psutil
 import tensorflow as tf
-from pyprojroot import here
+import pyprojroot
 
 from notebook import notebookapp
 import ipykernel
 
 
-rootpath = here(project_files=['.kilroy'], warn=False)
+rootpath = pyprojroot.find_root(pyprojroot.has_file(".kilroy"))
 
 
 def mooltipath(*args):
