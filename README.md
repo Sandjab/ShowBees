@@ -216,6 +216,18 @@ In addition to the various functions available within the codelib directory modu
 Examples are provided in the tutorials directory.
 
 ---
+## Related Research
+
+This repository is related to the following research work:
+
+**Honey Bee Queen Presence Detection from Audio Field Recordings using Summarized Spectrogram and Convolutional Neural Networks**
+*Agnieszka Orlowska, Dominique Fourer, Jean-Paul Gavini, Dominique Cassou-Ribehart*
+21st International Conference on Intelligent Systems Design and Applications (ISDA 2021)
+https://hal.science/hal-03439646
+
+**Abstract:** The present work proposes a simple supervised method based on a downsampled time-frequency representation of the input audio signal for detecting the presence of the queen in a beehive from noisy field recordings. The proposed technique computes a "summarized-spectrogram" of the signal that is used as the input of a deep convolutional neural network. This approach has the advantage of reducing the dimension of the input layer and the computational cost while obtaining better classification results with the same deep neural architecture. The comparative evaluation based on a cross-validation beehive-independent methodology shows a maximal accuracy of 96% using the proposed approach applied on the evaluation dataset.
+
+---
 ## Credits & Notes
 - Part of this repository code is a reuse of the (either untouched, slightly modified or heavily refactored) code from:
   - **Nolasco, Ines** : https://www.researchgate.net/profile/Ines_Nolasco
